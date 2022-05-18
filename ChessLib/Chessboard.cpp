@@ -1,104 +1,187 @@
 #include "Chessboard.h"
 
-Chessboard::Chessboard()
-	: m_bgColor1(COLOR_WHITE), m_bgColor2(COLOR_BLACK), m_chessboard{}
+Chessboard::Chessboard(const char* fen)
 {
-	for (auto& i : m_chessboard)
-		for (auto& j : i)
-			j = { ' ', COLOR_WHITE };
-}
-
-void Chessboard::SetCheckboardColor(Color c1, Color c2)
-{
-	m_bgColor1 = c1; m_bgColor2 = c2;
-}
-
-void Chessboard::SetTile(char column, size_t row, char character, Color color)
-{
-	m_chessboard[(size_t)column - 'a'][8 - row] = { character, color };
-}
-
-void Chessboard::Print()
-{
-	for (unsigned i = 0; i < m_chessboard.size(); ++i)
+	unsigned tileIndex = 0;
+	for (unsigned i = 0; i < strlen(fen); ++i)
 	{
-		printf("\x1B[0m %u ", 8 - i);
-		for (unsigned j = 0; j < m_chessboard[0].size(); ++j)
+		if (isalpha(fen[i]))
 		{
-			if ((i + j) % 2)
-				SetBackgroundColor(m_bgColor2);
-			else
-				SetBackgroundColor(m_bgColor1);
-
-			SetCharacterColor(m_chessboard[j][i].charColor);
-			printf(" %c ", m_chessboard[j][i].character);
+			Piece::Team team = isupper(fen[i]) ? Piece::Team::Player1 : Piece::Team::Player2;
+			switch (tolower(fen[i]))
+			{
+			case 'p':
+				chessboard[tileIndex] = std::make_unique<Pawn>(team);
+				break;
+			case 'r':
+				chessboard[tileIndex] = std::make_unique<Rook>(team);
+				break;
+			case 'n':
+				chessboard[tileIndex] = std::make_unique<Knight>(team);
+				break;
+			case 'b':
+				chessboard[tileIndex] = std::make_unique<Bishop>(team);
+				break;
+			case 'q':
+				chessboard[tileIndex] = std::make_unique<Queen>(team);
+				break;
+			case 'k':
+				chessboard[tileIndex] = std::make_unique<King>(team);
+				break;
+			}
+			++tileIndex;
 		}
-		printf("\n");
-	}
-	printf("\x1B[0m   ");
-	for (char i = 'a'; i < 'a' + 8; ++i)
-		printf(" %c ", i);
-	printf("\n\x1B[0m");
-}
-
-void Chessboard::SetBackgroundColor(Color c)
-{
-	switch (c)
-	{
-	case COLOR_BLACK:
-		printf("\x1B[40m");
-		break;
-	case COLOR_RED:
-		printf("\x1B[41m");
-		break;
-	case COLOR_GREEN:
-		printf("\x1B[42m");
-		break;
-	case COLOR_YELLOW:
-		printf("\x1B[43m");
-		break;
-	case COLOR_BLUE:
-		printf("\x1B[44m");
-		break;
-	case COLOR_MAGENTA:
-		printf("\x1B[45m");
-		break;
-	case COLOR_CYAN:
-		printf("\x1B[46m");
-		break;
-	case COLOR_WHITE:
-		printf("\x1B[47m");
-		break;
+		else if (isdigit(fen[i]))
+			tileIndex += fen[i] - '0';
 	}
 }
 
-void Chessboard::SetCharacterColor(Color c)
+std::string Chessboard::getFenString() const
 {
-	switch (c)
+	std::string result;
+
+	unsigned emptyCounter = 0u;
+	for (unsigned i = 0; i < chessboard.size(); ++i)
 	{
-	case COLOR_BLACK:
-		printf("\x1B[30m");
-		break;
-	case COLOR_RED:
-		printf("\x1B[31m");
-		break;
-	case COLOR_GREEN:
-		printf("\x1B[32m");
-		break;
-	case COLOR_YELLOW:
-		printf("\x1B[33m");
-		break;
-	case COLOR_BLUE:
-		printf("\x1B[34m");
-		break;
-	case COLOR_MAGENTA:
-		printf("\x1B[35m");
-		break;
-	case COLOR_CYAN:
-		printf("\x1B[36m");
-		break;
-	case COLOR_WHITE:
-		printf("\x1B[37m");
-		break;
+		if (chessboard[i])
+		{
+			if (emptyCounter)
+			{
+				result.push_back(emptyCounter + '0');
+				emptyCounter = 0;
+			}
+
+			result.push_back(*chessboard[i]);
+		}
+		else
+			++emptyCounter;
+
+		if ((i+1) % 8 == 0)
+		{
+			if (emptyCounter)
+			{
+				result.push_back(emptyCounter + '0');
+				emptyCounter = 0;
+			}
+
+			if(i != chessboard.size() - 1)
+				result.push_back('/');
+		}
 	}
+	
+	return result;
+}
+
+void Chessboard::getMoves(char row, char column, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const
+{
+	// Prawdopodobnie zbêdna funkcja
+
+	moveBuff.clear();
+	captureBuff.clear();
+
+	if (row < 1 || row > 8)
+		throw std::invalid_argument("Row must be in [1-8] range");
+	if (column < 'a' || column > 'h')
+		throw std::invalid_argument("Column must be in [a-h] range");
+
+	getMoves((8 - row) * 8 + (column - 'a'), moveBuff, captureBuff);
+}
+
+void Chessboard::getMoves(char pos, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const
+{
+	Piece::Type type = chessboard[pos]->getType();
+	Piece::Team team = chessboard[pos]->getTeam();
+	int maxDistance = getMaxDistance(chessboard[pos].get());
+
+	std::vector<char> moveDirects;
+
+	chessboard[pos]->getMoveDirections(moveDirects);
+
+	if (type == Piece::Type::Pawn)
+	{
+		std::vector<char> captureDirects;
+		dynamic_cast<Pawn*>(chessboard[pos].get())->getCaptureDirections(captureDirects);
+
+		// dodawanie mo¿liwych zbiæ dla pionka
+		for (const auto& dircetion : captureDirects)
+		{
+			char nextPos = pos + dircetion;
+			char currentPos = pos;
+
+			if (!canMoveStep(currentPos, nextPos))
+				break;
+			currentPos = nextPos;
+
+			if (chessboard[currentPos])
+				if (chessboard[currentPos]->getTeam() != team)
+					captureBuff.push_back(currentPos);
+
+			// TO DO
+			// Dodaæ wykrywanie bicia w przelocie
+		}
+	}
+
+	for (const auto& dircetion : moveDirects)	// wybieramy kierunek wzd³u¿ którego bêdziemy siê poruszaæ
+	{
+		char nextPos;
+		char currentPos = pos;
+		for (int i = 0; i < maxDistance; i++)
+		{
+			nextPos = currentPos + dircetion;
+
+			if (!canMoveStep(currentPos, nextPos))
+				break;
+			currentPos = nextPos;
+
+			// TO DO
+			// dodaæ wykrywanie mo¿liwoœci roszady
+			// przeciwdzia³anie szachowaniu
+			// sprawdzanie czy ruch ods³ania sojuszniczego króla
+
+			// dodawanie mo¿liwych ruchów
+			if (!chessboard[currentPos])
+			{
+				moveBuff.push_back(currentPos);
+				continue;
+			}
+
+			// dodawanie mo¿liwych zbiæ
+			if (type != Piece::Type::Pawn && chessboard[currentPos]->getTeam() != team)
+			{
+				captureBuff.push_back(currentPos);
+				break;
+			}
+			else
+				break;
+		}
+	}
+}
+
+int Chessboard::getMaxDistance(Piece* piece) const
+{
+	switch (piece->getType())
+	{
+	case Piece::Type::Rook:
+	case Piece::Type::Bishop:
+	case Piece::Type::Queen:
+		return 7;
+	case Piece::Type::Knight:
+	case Piece::Type::King:
+		return 1;
+	case Piece::Type::Pawn:
+		if (piece->getDistance())
+			return 1;
+		else
+			return 2;
+	}
+
+	return 0;
+}
+
+bool Chessboard::canMoveStep(char current, char dest) const
+{
+	if (dest < 0 || dest >= 64)
+		return false;
+
+	return abs(current % 8 - dest % 8) < 6;
 }

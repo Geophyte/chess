@@ -1,23 +1,43 @@
 #pragma once
-#include "Tile.h"
-
-enum class Colour {
-	White, Black
-};
-class Board;
+#include <cctype>
+#include <cmath>
+#include <array>
+#include <vector>
 
 class Piece
 {
-protected:
-	bool killed = false;
-	bool isFirstMove = true;
-	Colour colour;
 public:
-	explicit Piece(Colour c) : colour(c) {}
-	Colour getColour() const { return colour; }
-	bool isKilled() const { return killed; }
-	void setFirstMove(bool f) { isFirstMove = f; }
-	void setKilled(bool k) { killed = k; }
-	virtual bool canMoveTo(const Board& board, const Tile& from, const Tile& to) const = 0;
-	virtual ~Piece() {}
+	enum class Type : char
+	{
+		None = ' ', King = 'k', Queen = 'q', Bishop = 'b', Knight = 'n', Rook = 'r', Pawn = 'p'
+	};
+	enum class Team : char
+	{
+		Player1, Player2 // Player1 - pozycja 'na dole', Player2 - pozycja 'na górze'
+	};
+public:
+	Piece(Team t)
+		: distance(0), team(t)
+	{}
+
+	Team getTeam() const { return team; }
+	char getDistance() const { return distance; }
+
+	void onMove(char dist) { distance = dist; }
+
+	operator char() 
+	{ 
+		char temp = static_cast<char>(getType());
+		
+		if (team == Team::Player1)
+			temp = toupper(temp);
+
+		return temp;
+	}
+
+	virtual Type getType() const = 0;
+	virtual void getMoveDirections(std::vector<char>& direct) const = 0;
+protected:
+	char distance;	// iloœæ pól przebyta przez pionka w ostatniej kolejsce
+	const Team team;
 };

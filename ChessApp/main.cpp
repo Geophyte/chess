@@ -1,32 +1,37 @@
-#include <iostream>
-
+#include "ChessboardPrinter.h"
 #include "Chessboard.h"
 
 int main()
 {
-    Chessboard chessboard;
+    ChessboardPrinter printer;
 
-    chessboard.SetTile('a', 8, 'r', COLOR_RED);
-    chessboard.SetTile('b', 8, 'n', COLOR_RED);
-    chessboard.SetTile('c', 8, 'b', COLOR_RED);
-    chessboard.SetTile('d', 8, 'k', COLOR_RED);
-    chessboard.SetTile('e', 8, 'q', COLOR_RED);
-    chessboard.SetTile('f', 8, 'b', COLOR_RED);
-    chessboard.SetTile('g', 8, 'n', COLOR_RED);
-    chessboard.SetTile('h', 8, 'r', COLOR_RED);
-    for(int i=0; i<8; ++i)
-        chessboard.SetTile(i + 'a', 7, 'p', COLOR_RED);
-
-    chessboard.SetTile('a', 1, 'r', COLOR_BLUE);
-    chessboard.SetTile('b', 1, 'n', COLOR_BLUE);
-    chessboard.SetTile('c', 1, 'b', COLOR_BLUE);
-    chessboard.SetTile('d', 1, 'k', COLOR_BLUE);
-    chessboard.SetTile('e', 1, 'q', COLOR_BLUE);
-    chessboard.SetTile('f', 1, 'b', COLOR_BLUE);
-    chessboard.SetTile('g', 1, 'n', COLOR_BLUE);
-    chessboard.SetTile('h', 1, 'r', COLOR_BLUE);
-    for (int i = 0; i < 8; ++i)
-        chessboard.SetTile(i + 'a', 2, 'p', COLOR_BLUE);
-
-    chessboard.Print();
+    {
+        Chessboard chessboard("p7/8/2P3p1/1P4P1/8/5p1p/1P4P1/p7");
+        printer.printMoves(25, chessboard); // B5
+        printer.printMoves(30, chessboard); // G5
+        printer.printMoves(49, chessboard); // B2
+        printer.printMoves(54, chessboard); // G2
+    }
+    {
+        Chessboard chessboard("8/8/1p4P1/8/8/8/1R4R1/R7");
+        printer.printMoves(56, chessboard); // A1
+        printer.printMoves(49, chessboard); // B2
+        printer.printMoves(54, chessboard); // G2
+    }
+    {
+        Chessboard chessboard("8/8/8/3pp3/3pp3/2N2N2/P6P/NP4P1");
+        printer.printMoves(56, chessboard); // A1
+        printer.printMoves(42, chessboard); // C3
+        printer.printMoves(45, chessboard); // F3
+    }
+    {
+        Chessboard chessboard("8/8/1p6/4p3/8/4Q1P1/8/Q7");
+        printer.printMoves(56, chessboard); // A1
+        printer.printMoves(44, chessboard); // E3
+    }
+    {
+        Chessboard chessboard("8/8/8/8/4P3/4K3/p7/K7");
+        printer.printMoves(56, chessboard); // A1
+        printer.printMoves(44, chessboard); // E3
+    }
 }

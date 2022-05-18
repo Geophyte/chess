@@ -1,40 +1,24 @@
 #pragma once
-#include <iostream>
-#include <array>
+#include "Piece.h"
+#include "ChessPieces.h"
 
-enum class Color : char
-{ 
-	Black, Red, Green, Yellow, Blue, Magenta, Cyan, White
-};
+#include <string>
+#include <array>
+#include <vector>
+#include <memory>
+#include <stdexcept>
 
 class Chessboard
 {
 public:
-	struct TileInfo
-	{
-		char character;
-		Color charColor;
-	};
-public:
-	Chessboard();
+	Chessboard(const char* fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 
-	void SetCheckboardColor(Color c1, Color c2);
-	void SetTile(char column, size_t row, char character, Color color);
-
-	void Print();
+	std::string getFenString() const;	// zwraca aktualne po³o¿enie figur jako FEN string
+	void getMoves(char pos, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const;					// zwraca mo¿liwe do wykonania ruchy przez figurê na danej pozycji
+	void getMoves(char row, char column, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const;	// row jest podawane jako cyfra w przedziale [1-8], column to litera w przedziale [a-h]
 private:
-	void SetBackgroundColor(Color c);
-	void SetCharacterColor(Color c);
+	int getMaxDistance(Piece* piece) const;	// zwraca maksymaln¹ iloœæ pól któr¹ mo¿e pokonaæ pionek w jednym ruchu
+	bool canMoveStep(char current, char dest) const;	// sprawdza czy mo¿na przejœæ miêdzy polami bez wychodzenia za planszê i 'teleportacji' na drug¹ stronê
 private:
-	Color m_bgColor1, m_bgColor2;
-	std::array<std::array<TileInfo, 8u>, 8u> m_chessboard;
+	std::array<std::unique_ptr<Piece>, 64> chessboard;
 };
-
-#define COLOR_BLACK		Color::Black
-#define COLOR_RED		Color::Red
-#define COLOR_GREEN		Color::Green
-#define COLOR_YELLOW	Color::Yellow
-#define COLOR_BLUE		Color::Blue
-#define COLOR_MAGENTA	Color::Magenta
-#define COLOR_CYAN		Color::Cyan
-#define COLOR_WHITE		Color::White
