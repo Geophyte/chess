@@ -7,9 +7,5 @@ public:
 	Pawn(Team team);
 
 	virtual Type getType() const override;
-	virtual void getMoveDirections(std::vector<char>& direct) const override;
-	virtual void getCaptureDirections(std::vector<char>& direct) const;
-private:
-	static const std::array<char, 3> directions1;
-	static const std::array<char, 3> directions2;
+	virtual void getMoves(const Chessboard& chessboard, char pos, std::vector<char>& moves, std::vector<char>& captures) const override;
 };

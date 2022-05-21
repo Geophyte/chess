@@ -4,6 +4,8 @@
 #include <array>
 #include <vector>
 
+extern class Chessboard;
+
 class Piece
 {
 public:
@@ -16,28 +18,20 @@ public:
 		Player1, Player2 // Player1 - pozycja 'na dole', Player2 - pozycja 'na górze'
 	};
 public:
-	Piece(Team t)
-		: distance(0), team(t)
-	{}
+	Piece(Team t);
 
-	Team getTeam() const { return team; }
-	char getDistance() const { return distance; }
+	Team getTeam() const;
+	char getLastDistance() const;
 
-	void onMove(char dist) { distance = dist; }
+	void onMove(char dist);
 
-	operator char() 
-	{ 
-		char temp = static_cast<char>(getType());
-		
-		if (team == Team::Player1)
-			temp = toupper(temp);
-
-		return temp;
-	}
+	operator char();
 
 	virtual Type getType() const = 0;
-	virtual void getMoveDirections(std::vector<char>& direct) const = 0;
+	virtual void getMoves(const Chessboard& chessboard, char pos, std::vector<char>& moves, std::vector<char>& captures) const = 0;
 protected:
-	char distance;	// iloœæ pól przebyta przez pionka w ostatniej kolejsce
+	int getMaxDistance(Type type) const;	// zwraca maksymaln¹ iloœæ pól któr¹ mo¿e pokonaæ pionek w jednym ruchu
+protected:
+	char lastDistance;	// iloœæ pól przebyta przez pionka w ostatniej kolejce
 	const Team team;
 };

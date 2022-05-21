@@ -72,110 +72,9 @@ std::string Chessboard::getFenString() const
 	return result;
 }
 
-void Chessboard::getMoves(char row, char column, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const
-{
-	// Prawdopodobnie zbêdna funkcja
-
-	moveBuff.clear();
-	captureBuff.clear();
-
-	if (row < 1 || row > 8)
-		throw std::invalid_argument("Row must be in [1-8] range");
-	if (column < 'a' || column > 'h')
-		throw std::invalid_argument("Column must be in [a-h] range");
-
-	getMoves((8 - row) * 8 + (column - 'a'), moveBuff, captureBuff);
-}
-
 void Chessboard::getMoves(char pos, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const
 {
-	Piece::Type type = chessboard[pos]->getType();
-	Piece::Team team = chessboard[pos]->getTeam();
-	int maxDistance = getMaxDistance(chessboard[pos].get());
-
-	std::vector<char> moveDirects;
-
-	chessboard[pos]->getMoveDirections(moveDirects);
-
-	if (type == Piece::Type::Pawn)
-	{
-		std::vector<char> captureDirects;
-		dynamic_cast<Pawn*>(chessboard[pos].get())->getCaptureDirections(captureDirects);
-
-		// dodawanie mo¿liwych zbiæ dla pionka
-		for (const auto& dircetion : captureDirects)
-		{
-			char nextPos = pos + dircetion;
-			char currentPos = pos;
-
-			if (!canMoveStep(currentPos, nextPos))
-				break;
-			currentPos = nextPos;
-
-			if (chessboard[currentPos])
-				if (chessboard[currentPos]->getTeam() != team)
-					captureBuff.push_back(currentPos);
-
-			// TO DO
-			// Dodaæ wykrywanie bicia w przelocie
-		}
-	}
-
-	for (const auto& dircetion : moveDirects)	// wybieramy kierunek wzd³u¿ którego bêdziemy siê poruszaæ
-	{
-		char nextPos;
-		char currentPos = pos;
-		for (int i = 0; i < maxDistance; i++)
-		{
-			nextPos = currentPos + dircetion;
-
-			if (!canMoveStep(currentPos, nextPos))
-				break;
-			currentPos = nextPos;
-
-			// TO DO
-			// dodaæ wykrywanie mo¿liwoœci roszady
-			// przeciwdzia³anie szachowaniu
-			// sprawdzanie czy ruch ods³ania sojuszniczego króla
-
-			// dodawanie mo¿liwych ruchów
-			if (!chessboard[currentPos])
-			{
-				moveBuff.push_back(currentPos);
-				continue;
-			}
-
-			// dodawanie mo¿liwych zbiæ
-			if (type != Piece::Type::Pawn && chessboard[currentPos]->getTeam() != team)
-			{
-				captureBuff.push_back(currentPos);
-				break;
-			}
-			else
-				break;
-		}
-	}
-}
-
-int Chessboard::getMaxDistance(Piece* piece) const
-{
-	switch (piece->getType())
-	{
-	case Piece::Type::Rook:
-	case Piece::Type::Bishop:
-	case Piece::Type::Queen:
-		return 7;
-	case Piece::Type::Knight:
-	case Piece::Type::King:
-		return 1;
-	case Piece::Type::Pawn:
-		if (piece->getDistance())
-			return 1;
-		else
-			return 2;
-	}
-
-	return 0;
+	chessboard[pos]->getMoves(*this, pos, moveBuff, captureBuff);
 }
 
 bool Chessboard::canMoveStep(char current, char dest) const
@@ -184,4 +83,9 @@ bool Chessboard::canMoveStep(char current, char dest) const
 		return false;
 
 	return abs(current % 8 - dest % 8) < 6;
+}
+
+const Piece* Chessboard::operator[](char offset) const
+{
+	return chessboard[offset].get();
 }

@@ -7,7 +7,5 @@ public:
 	explicit Bishop(Team team);
 
 	virtual Type getType() const override;
-	virtual void getMoveDirections(std::vector<char>& direct) const override;
-private:
-	static const std::array<char, 4> directions;
+	virtual void getMoves(const Chessboard& chessboard, char pos, std::vector<char>& moves, std::vector<char>& captures) const override;
 };
