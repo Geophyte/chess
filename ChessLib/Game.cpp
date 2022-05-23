@@ -84,3 +84,53 @@
 //		std::cout << "Black won";
 //	delete board;
 //}
+
+#include "Game.h"
+#include "Players/HumanPlayer.h"
+#include <algorithm>
+
+Game::Game(Game::Players player1, Game::Players player2) {
+	Game::Players p[] = { player1, player2 };
+	if (player1 == Game::Players::Human)
+		currPlayer = std::make_unique<HumanPlayer>(1);
+	if (player2 == Game::Players::Human)
+		secondPlayer = std::make_unique<HumanPlayer>(0);
+}
+
+
+bool Game::isInCheck(Player* player) const {
+	std::string fenString = board.getFenString();
+	char king = player->getTeam() == Team::Player1 ? 'K' : 'k';
+	char kingOffset = 0;
+	for (auto i : fenString) {
+		if (i == king)
+			break;
+		if (isdigit(i))
+			kingOffset += (i - '0');
+		else if (isalpha(i))
+			kingOffset += 1;
+	}
+	std::vector<char> moves;
+	std::vector<char> captures;
+	char currOffset = 0;
+	for (auto i : fenString) {
+		if (isalpha(i)) {
+			if (islower(king) != islower(i)) {
+				board[currOffset]->getMoves(board, currOffset, moves, captures);
+			}
+			currOffset += 1;
+		}
+		else if (isdigit(i))
+			currOffset += (i - '0');
+	}
+	if (std::find(captures.begin(), captures.end(), kingOffset) != captures.end())
+		return true;
+	return false;
+}
+
+
+void Game::play() {
+	while (status != GameStatus::End) {
+
+	}
+}

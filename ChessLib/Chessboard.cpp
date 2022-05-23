@@ -7,7 +7,7 @@ Chessboard::Chessboard(const char* fen)
 	{
 		if (isalpha(fen[i]))
 		{
-			Piece::Team team = isupper(fen[i]) ? Piece::Team::Player1 : Piece::Team::Player2;
+			Team team = isupper(fen[i]) ? Team::Player1 : Team::Player2;
 			switch (tolower(fen[i]))
 			{
 			case 'p':

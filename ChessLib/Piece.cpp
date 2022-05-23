@@ -5,7 +5,7 @@ Piece::Piece(Team t)
 	: lastDistance(0), team(t)
 {}
 
-Piece::Team Piece::getTeam() const
+Team Piece::getTeam() const
 {
 	return team;
 }

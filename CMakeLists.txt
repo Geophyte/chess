@@ -5,7 +5,7 @@ project(Chess VERSION 1.0)
 #   ChessLib
 #==========================================
 
-file(GLOB_RECURSE ChessLib_SRC "ChessLib/*.h" "ChessLib/*.cpp")
+file(GLOB_RECURSE ChessLib_SRC "ChessLib/*.h" "ChessLib/*.cpp" "ChessLib/ChessPieces/*.h" "ChessLib/ChessPieces/*.cpp" "ChessLib/Players/*.h" "ChessLib/Players/*.cpp")
 
 add_library(ChessLib ${ChessLib_SRC})
 

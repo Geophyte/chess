@@ -17,7 +17,7 @@ void Pawn::getMoves(const Chessboard& cb, char pos, std::vector<char>& moves, st
 	std::vector<char> captureDirections;
 	char maxDistance = getMaxDistance(getType());
 
-	if (team == Piece::Team::Player1)
+	if (team == Team::Player1)
 	{
 		moveDirection = -8;
 		captureDirections = { -7, -9 };

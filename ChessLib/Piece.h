@@ -6,16 +6,17 @@
 
 extern class Chessboard;
 
+enum class Team : char
+{
+	Player1, Player2 // Player1 - pozycja 'na dole', Player2 - pozycja 'na górze'
+};
+
 class Piece
 {
 public:
 	enum class Type : char
 	{
 		None = ' ', King = 'k', Queen = 'q', Bishop = 'b', Knight = 'n', Rook = 'r', Pawn = 'p'
-	};
-	enum class Team : char
-	{
-		Player1, Player2 // Player1 - pozycja 'na dole', Player2 - pozycja 'na górze'
 	};
 public:
 	Piece(Team t);
