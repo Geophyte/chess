@@ -88,6 +88,7 @@
 #include "Game.h"
 #include "Players/HumanPlayer.h"
 #include <algorithm>
+#include <memory>
 
 Game::Game(Game::Players player1, Game::Players player2) {
 	Game::Players p[] = { player1, player2 };
@@ -126,6 +127,36 @@ bool Game::isInCheck(Player* player) const {
 	if (std::find(captures.begin(), captures.end(), kingOffset) != captures.end())
 		return true;
 	return false;
+}
+
+
+bool Game::isGameOver(Player* player) const {
+	std::vector<char> moves;
+	std::vector<char> captures;
+	char currOffset = 0;
+	char king = player->getTeam() == Team::Player1 ? 'K' : 'k';
+	std::string fenString= board.getFenString();
+	for (auto i : fenString) {
+		if (isalpha(i)) {
+			if (islower(king) != islower(i)) {
+				moves.clear();
+				captures.clear();
+				board[currOffset]->getMoves(board, currOffset, moves, captures);
+				for (auto j : moves) {
+
+				}
+			}
+			currOffset += 1;
+		}
+		else if (isdigit(i))
+			currOffset += (i - '0');
+	}
+	
+}
+
+
+void Game::makeMove(const char offsetFrom, const char offsetTo) const{
+	board[offsetFrom].swap(board[offsetTo]);
 }
 
 
