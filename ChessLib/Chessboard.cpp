@@ -89,3 +89,19 @@ const Piece* Chessboard::operator[](char offset) const
 {
 	return chessboard[offset].get();
 }
+
+void Chessboard::makeMove(const char offsetFrom, const char offsetTo) {
+	lastMove.reset();
+	if (chessboard[offsetTo]) {
+		lastMove = std::move(chessboard[offsetTo]);
+	}
+	chessboard[offsetFrom].swap(chessboard[offsetTo]);
+}
+
+void Chessboard::undoMove(const char offsetFrom, const char offsetTo)
+{
+	if (lastMove) {
+		chessboard[offsetTo] = std::move(lastMove);
+	}
+	chessboard[offsetFrom].swap(chessboard[offsetTo]);
+}

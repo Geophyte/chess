@@ -40,12 +40,14 @@ public:
 private:
 	Chessboard board;
 	ChessboardPrinter printer;
-	std::unique_ptr<Player> currPlayer;
-	std::unique_ptr<Player> secondPlayer;
+	Player* currPlayer = nullptr;
+	Player* secondPlayer = nullptr;
 	GameStatus status = GameStatus::None;
 	bool isInCheck(Player* player) const;
-	void endGame();
+	bool isGameOver(Player* player);
+	void endGame() const;
 public:
 	explicit Game(Players first, Players second);
+	~Game();
 	void play();
 };

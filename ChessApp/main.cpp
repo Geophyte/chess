@@ -1,8 +1,9 @@
 #include "ChessboardPrinter.h"
 #include "Chessboard.h"
+#include "Game.h"
 
 int main()
-{
+{   /*
     ChessboardPrinter printer;
 
     {
@@ -34,4 +35,7 @@ int main()
         printer.printMoves(56, chessboard); // A1
         printer.printMoves(44, chessboard); // E3
     }
+    */
+    Game game(Game::Players::Human, Game::Players::Human);
+    game.play();
 }
