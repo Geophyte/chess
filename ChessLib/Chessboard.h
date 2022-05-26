@@ -18,8 +18,10 @@ public:
 	void getMoves(char pos, std::vector<char>& moveBuff, std::vector<char>& captureBuff) const;	// zwraca mo¿liwe do wykonania ruchy przez figurê na danej pozycji
 
 	bool canMoveStep(char current, char dest) const;	// sprawdza czy mo¿na przejœæ miêdzy polami bez wychodzenia za planszê i 'teleportacji' na drug¹ stronê
-
+	void makeMove(const char offsetFrom, const char offsetTo);
+	void undoMove(const char offsetFrom, const char offsetTo);
 	const Piece* operator[](char offset) const;
 private:
 	std::array<std::unique_ptr<Piece>, 64> chessboard;
+	std::unique_ptr<Piece> lastMove;
 };

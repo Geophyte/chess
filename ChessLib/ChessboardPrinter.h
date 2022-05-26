@@ -32,7 +32,7 @@ public:
 
 	void print(const char* fen) const;	// ci¹g znaków FEN, du¿a litera = player1, ma³a litera = player2
 	void print(std::string fen) const;	// p - pionek, r - wie¿a, n - skoczek, b - goniec, q - hetman, k - król, / - koniec wiersza, [1-9] - liczba pustych miejsc
-
+	void refreshScreen(std::string fen) const;
 	void printMoves(char pos, const Chessboard& board) const;
 private:
 	void setBackgroundColor(Color color) const;

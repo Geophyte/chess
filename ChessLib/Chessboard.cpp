@@ -7,7 +7,7 @@ Chessboard::Chessboard(const char* fen)
 	{
 		if (isalpha(fen[i]))
 		{
-			Piece::Team team = isupper(fen[i]) ? Piece::Team::Player1 : Piece::Team::Player2;
+			Team team = isupper(fen[i]) ? Team::Player1 : Team::Player2;
 			switch (tolower(fen[i]))
 			{
 			case 'p':
@@ -88,4 +88,20 @@ bool Chessboard::canMoveStep(char current, char dest) const
 const Piece* Chessboard::operator[](char offset) const
 {
 	return chessboard[offset].get();
+}
+
+void Chessboard::makeMove(const char offsetFrom, const char offsetTo) {
+	lastMove.reset();
+	if (chessboard[offsetTo]) {
+		lastMove = std::move(chessboard[offsetTo]);
+	}
+	chessboard[offsetFrom].swap(chessboard[offsetTo]);
+}
+
+void Chessboard::undoMove(const char offsetFrom, const char offsetTo)
+{
+	if (lastMove) {
+		chessboard[offsetTo] = std::move(lastMove);
+	}
+	chessboard[offsetFrom].swap(chessboard[offsetTo]);
 }

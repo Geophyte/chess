@@ -1,4 +1,5 @@
 #include "ChessboardPrinter.h"
+#include <conio.h>
 
 ChessboardPrinter::ChessboardPrinter(Color player1, Color player2, Color background1, Color background2)
 	: player1(player1), player2(player2), background1(background1), background2(background2)
@@ -168,4 +169,9 @@ void ChessboardPrinter::setPieceColor(bool isPlayer1) const
 void ChessboardPrinter::resetColor() const
 {
 	printf("\u001b[0m");
+}
+
+void ChessboardPrinter::refreshScreen(std::string fen) const {
+	system("cls");
+	this->print(fen);
 }
