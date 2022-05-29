@@ -32,13 +32,16 @@ public:
 
 	void print(const char* fen) const;	// ci¹g znaków FEN, du¿a litera = player1, ma³a litera = player2
 	void print(std::string fen) const;	// p - pionek, r - wie¿a, n - skoczek, b - goniec, q - hetman, k - król, / - koniec wiersza, [1-9] - liczba pustych miejsc
-	void refreshScreen(std::string fen) const;
+	void clear() const;
+
 	void printMoves(char pos, const Chessboard& board) const;
+	void printTeam(Team team, const Chessboard& board) const;
 private:
+	void print(const std::array<std::array<TileInfo, 9>, 9>& info) const;
 	void setBackgroundColor(Color color) const;
-	void setBackgroundColor(unsigned tile) const;
-	void setPieceColor(bool isPlayer1) const;
+	void setCharColor(Color color) const;
 	void resetColor() const;
+	std::array<std::array<TileInfo, 9>, 9> getChessboardTiles(const char* fen) const;
 private:
 	Color player1, player2, background1, background2;;
 };

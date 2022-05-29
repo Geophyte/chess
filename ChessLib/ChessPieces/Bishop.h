@@ -4,8 +4,8 @@
 class Bishop : public Piece
 {
 public:
-	explicit Bishop(Team team);
+	Bishop(Chessboard& chessboard, Team t, char pos);
 
 	virtual Type getType() const override;
-	virtual void getMoves(const Chessboard& chessboard, char pos, std::vector<char>& moves, std::vector<char>& captures) const override;
+	virtual void getMoves(std::vector<Move>& moves) const override;
 };

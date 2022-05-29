@@ -1,5 +1,4 @@
 #include "ChessboardPrinter.h"
-#include <conio.h>
 
 ChessboardPrinter::ChessboardPrinter(Color player1, Color player2, Color background1, Color background2)
 	: player1(player1), player2(player2), background1(background1), background2(background2)
@@ -8,36 +7,8 @@ ChessboardPrinter::ChessboardPrinter(Color player1, Color player2, Color backgro
 
 void ChessboardPrinter::print(const char* fen) const
 {
-	unsigned tileIndex = 0;
-	for (unsigned i = 0; i < strlen(fen); ++i)
-	{
-		if (fen[i] == '/')
-			printf("\n");
-		else if (tileIndex % 8 == 0)
-			printf(" %u ", tileIndex / 8u + 1u);
-
-		if (isalpha(fen[i]))
-		{
-			setBackgroundColor(tileIndex);
-			setPieceColor(isupper(fen[i]));
-
-			printf(" %c ", tolower(fen[i]));
-			++tileIndex;
-		}
-		if (isdigit(fen[i]))
-			for (unsigned n = 0; n < fen[i] - '0'; ++n)
-			{
-				setBackgroundColor(tileIndex);
-
-				printf("   ");
-				++tileIndex;
-			}
-		resetColor();
-	}
-	printf("\n   ");
-	for (char i = 'a'; i < 'a' + 8; ++i)
-		printf(" %c ", i);
-	printf("\n");
+	auto info = getChessboardTiles(fen);
+	print(info);
 }
 
 void ChessboardPrinter::print(std::string fen) const
@@ -45,55 +16,78 @@ void ChessboardPrinter::print(std::string fen) const
 	print(fen.c_str());
 }
 
+void ChessboardPrinter::clear() const
+{
+	system("cls");
+}
+
 void ChessboardPrinter::printMoves(char pos, const Chessboard& board) const
 {
 	std::string fen = board.getFenString();
-	std::vector<char> moves, captures;
-	board.getMoves(pos, moves, captures);
+	std::vector<Move> buff;
+	board.getMoves(pos, buff);
 
-	std::sort(moves.begin(), moves.end());
-	std::sort(captures.begin(), captures.end());
-
-	char tileIndex = 0;
-	for (const auto& i : fen)
+	std::vector<char> moves, captures, specials;
 	{
-		if (i == '/')
-			printf("\n");
-		else if (tileIndex % 8 == 0)
-			printf(" %u ", tileIndex / 8u + 1u);
-
-		if (isalpha(i))
+		for (const auto& move : buff)
 		{
-			if(std::find(moves.begin(), moves.end(), tileIndex) != moves.end())
-				setBackgroundColor(COLOR_GREEN);
-			else if (std::find(captures.begin(), captures.end(), tileIndex) != captures.end())
-				setBackgroundColor(COLOR_YELLOW);
-			else
-				setBackgroundColor(tileIndex);
-			setPieceColor(isupper(i));
-
-			printf(" %c ", tolower(i));
-			++tileIndex;
-		}
-		if (isdigit(i))
-			for (unsigned n = 0; n < i - '0'; ++n)
+			switch (move.type)
 			{
-				if (std::find(moves.begin(), moves.end(), tileIndex) != moves.end())
-					setBackgroundColor(COLOR_GREEN);
-				else if (std::find(captures.begin(), captures.end(), tileIndex) != captures.end())
-					setBackgroundColor(COLOR_YELLOW);
-				else
-					setBackgroundColor(tileIndex);
-
-				printf("   ");
-				++tileIndex;
+			case Move::Type::Move:
+				moves.push_back(move.cDest);
+				break;
+			case Move::Type::Capture:
+				captures.push_back(move.cDest);
+				break;
+			case Move::Type::Castling:
+			case Move::Type::Promotion:
+			case Move::Type::EnPassant:
+				specials.push_back(move.oStart);
+				break;
 			}
-		resetColor();
+		}
 	}
-	printf("\n   ");
-	for (char i = 'a'; i < 'a' + 8; ++i)
-		printf(" %c ", i);
-	printf("\n");
+
+	auto info = getChessboardTiles(fen.c_str());
+	info[pos / 8][(size_t)pos % 8 + 1].bgColor = COLOR_CYAN;
+
+	for (const auto& move : moves)
+		info[move / 8][(size_t)move % 8 + 1].bgColor = COLOR_GREEN;
+	for (const auto& capture : captures)
+		info[capture / 8][(size_t)capture % 8 + 1].bgColor = COLOR_YELLOW;
+	for (const auto& special : specials)
+		info[special / 8][(size_t)special % 8 + 1].bgColor = COLOR_MAGENTA;
+
+	print(info);
+}
+
+void ChessboardPrinter::printTeam(Team team, const Chessboard& board) const
+{
+	std::string fen = board.getFenString();
+	auto info = getChessboardTiles(fen.c_str());
+
+	std::vector<char> offsets;
+	board.getTeamOffsets(team, offsets);
+	for (const auto& i : offsets)
+		info[i / 8][(size_t)i % 8 + 1].bgColor = COLOR_GREEN;
+
+	print(info);
+}
+
+void ChessboardPrinter::print(const std::array<std::array<TileInfo, 9>, 9>& info) const
+{
+	for (const auto& row : info)
+	{
+		for (const auto& tile : row)
+		{
+			setCharColor(tile.charColor);
+			setBackgroundColor(tile.bgColor);
+			printf(" %c ", tile.character);
+		}
+		resetColor();
+		printf("\n");
+	}
+	resetColor();
 }
 
 void ChessboardPrinter::setBackgroundColor(Color color) const
@@ -127,16 +121,8 @@ void ChessboardPrinter::setBackgroundColor(Color color) const
 	}
 }
 
-void ChessboardPrinter::setBackgroundColor(unsigned tile) const
+void ChessboardPrinter::setCharColor(Color c) const
 {
-	Color c = (tile / 8 + tile) % 2 ? background1 : background2;
-	setBackgroundColor(c);
-}
-
-void ChessboardPrinter::setPieceColor(bool isPlayer1) const
-{
-	Color c = isPlayer1 ? player1 : player2;
-
 	switch (c)
 	{
 	case COLOR_BLACK:
@@ -171,7 +157,38 @@ void ChessboardPrinter::resetColor() const
 	printf("\u001b[0m");
 }
 
-void ChessboardPrinter::refreshScreen(std::string fen) const {
-	system("cls");
-	this->print(fen);
+std::array<std::array<ChessboardPrinter::TileInfo, 9>, 9> ChessboardPrinter::getChessboardTiles(const char* fen) const
+{
+	std::string chars = "";
+	for (int i = 0; i < strlen(fen); i++)
+	{
+		if (isalpha(fen[i]))
+			chars += fen[i];
+		if (isdigit(fen[i]))
+			for (int j = 0; j < fen[i] - '0'; j++)
+				chars += ' ';
+	}
+
+	std::array<std::array<TileInfo, 9>, 9> arr = {};
+	for (size_t i = 0; i < 8; i++)
+	{
+		arr[i][0].character = '8' - i;
+		arr[i][0].charColor = COLOR_WHITE;
+		arr[i][0].bgColor = COLOR_BLACK;
+
+		for (size_t j = 0; j < 8; j++)
+		{
+			char current = chars[j + i * 8];
+			arr[i][j + 1].character = tolower(current);
+			arr[i][j + 1].charColor = islower(current) ? player2 : player1;
+			arr[i][j + 1].bgColor = (i + j) % 2 ? background1 : background2;
+		}
+	}
+	for (size_t i = 0; i < 9; i++)
+	{
+		arr[8][i].character = 'a' + i;
+		arr[8][i].charColor = COLOR_WHITE;
+		arr[8][i].bgColor = COLOR_BLACK;
+	}
+	return arr;
 }

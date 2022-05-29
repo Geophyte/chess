@@ -4,8 +4,8 @@
 class Rook : public Piece
 {
 public:
-	Rook(Team team);
+	Rook(Chessboard& chessboard, Team team, char pos);
 
 	virtual Type getType() const override;
-	virtual void getMoves(const Chessboard& chessboard, char pos, std::vector<char>& moves, std::vector<char>& captures) const override;
+	virtual void getMoves(std::vector<Move>& moves) const override;
 };

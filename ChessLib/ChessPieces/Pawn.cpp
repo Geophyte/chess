@@ -1,8 +1,8 @@
 #include "Pawn.h"
 #include "../Chessboard.h"
 
-Pawn::Pawn(Team team)
-	: Piece(team)
+Pawn::Pawn(Chessboard& chessboard, Team team, char pos)
+	: Piece(chessboard, team, pos)
 {
 }
 
@@ -11,11 +11,12 @@ Piece::Type Pawn::getType() const
 	return Piece::Type::Pawn;
 }
 
-void Pawn::getMoves(const Chessboard& cb, char pos, std::vector<char>& moves, std::vector<char>& captures) const
+void Pawn::getMoves(std::vector<Move>& moves) const
 {
 	char moveDirection;
 	std::vector<char> captureDirections;
 	char maxDistance = getMaxDistance(getType());
+	auto king = chessboard.getKing(team);
 
 	if (team == Team::Player1)
 	{
@@ -28,37 +29,60 @@ void Pawn::getMoves(const Chessboard& cb, char pos, std::vector<char>& moves, st
 		captureDirections = { 7, 9 };
 	}
 
+	// Generowanie ruchow i promocji
 	{
-		char nextPos;
-		char currentPos = pos;
+		std::vector<std::pair<char, Piece*>> sBuff;
+		chessboard.searchDirection(pos, moveDirection, getMaxDistance(getType()), sBuff);
+
+		char maxDistance = sBuff.size();
 		for (int i = 0; i < maxDistance; i++)
 		{
-			nextPos = currentPos + moveDirection;
+			if (!sBuff[i].second)
+			{
+				Move temp = { pos, sBuff[i].first, pos, sBuff[i].first, Move::Type::Move };
+				if (sBuff[i].first / 8 == 0 || sBuff[i].first / 8 == 7)
+					temp.type = Move::Type::Promotion;
 
-			if (!cb.canMoveStep(currentPos, nextPos))
+				if (!king->willIndangereKing(temp))
+					moves.push_back(temp);
+			}
+			else
 				break;
-			currentPos = nextPos;
-
-			if (!cb[currentPos])
-				moves.push_back(currentPos);
 		}
 	}
 
-	for (const auto& dircetion : captureDirections)
+	// generowanie zbic i bicia w przelocie
+	for (const auto& direction : captureDirections)
 	{
-		char nextPos = pos + dircetion;
-		char currentPos = pos;
+		std::vector<std::pair<char, Piece*>> sBuff;
+		chessboard.searchDirection(pos, direction, 1, sBuff);
 
-		if (!cb.canMoveStep(currentPos, nextPos))
-			break;
-		currentPos = nextPos;
+		char maxDistance = sBuff.size();
+		for (int i = 0; i < maxDistance; i++)
+		{
+			// Zwykle bicie
+			if (sBuff[i].second)
+				if (sBuff[i].second->getTeam() != team)
+				{
+					Move temp = { pos, sBuff[i].first, sBuff[i].first, sBuff[i].first, Move::Type::Capture };
+					if (!king->willIndangereKing(temp))
+						moves.push_back(temp);
+					continue;
+				}
 
-		if (cb[currentPos])
-			if (cb[currentPos]->getTeam() != team)
-				captures.push_back(currentPos);
-
-		// TO DO
-		// Dodac wykrywanie bicia w przelocie
+			// bicie w przelocie
+			char capturePos = sBuff[i].first - moveDirection;
+			char currentRow = pos / 8;
+			if (chessboard.getPiece(capturePos))
+				if (chessboard.getPiece(capturePos)->getTeam() != team &&
+					chessboard.getPiece(capturePos)->getState() == State::FirstMove &&
+					chessboard.getPiece(capturePos)->getType() == Piece::Type::Pawn &&
+					(currentRow == 3 || currentRow == 4))
+				{
+					Move temp = { pos, sBuff[i].first, capturePos, capturePos, Move::Type::EnPassant };
+					if (!king->willIndangereKing(temp))
+						moves.push_back(temp);
+				}
+		}
 	}
-
 }
