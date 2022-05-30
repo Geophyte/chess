@@ -184,9 +184,9 @@ std::array<std::array<ChessboardPrinter::TileInfo, 9>, 9> ChessboardPrinter::get
 			arr[i][j + 1].bgColor = (i + j) % 2 ? background1 : background2;
 		}
 	}
-	for (size_t i = 0; i < 9; i++)
+	for (size_t i = 1; i < 9; i++)
 	{
-		arr[8][i].character = 'a' + i;
+		arr[8][i].character = 'a' - 1 + i;
 		arr[8][i].charColor = COLOR_WHITE;
 		arr[8][i].bgColor = COLOR_BLACK;
 	}

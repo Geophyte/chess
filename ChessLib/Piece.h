@@ -16,6 +16,8 @@ struct Move
 		Move, Capture, Castling, Promotion, EnPassant
 	} type;
 
+	char newFigure; // for en passat move
+
 	bool operator<(const Move& other) const;
 };
 

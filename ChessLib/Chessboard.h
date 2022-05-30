@@ -25,8 +25,9 @@ public:
 	std::string getFenString() const;	// zwraca aktualne po³o¿enie figur jako FEN string
 	void getMoves(char pos, std::vector<Move>& moves) const;	// zwraca mo¿liwe do wykonania ruchy przez figurê na danej pozycji
 	void getTeamOffsets(Team team, std::vector<char>& offsets) const;
-	const King* getKing(Team team) const;
-	const Piece* getPiece(char pos) const;
+	void switchPromotion(char position, char newFigure);
+	King* getKing(Team team) const;
+	Piece* getPiece(char pos) const;
 private:
 	King *king1, *king2;
 	std::unique_ptr<Piece> shadowRealm;

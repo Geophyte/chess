@@ -168,14 +168,37 @@ void Chessboard::getTeamOffsets(Team team, std::vector<char>& offsets) const
 				offsets.push_back(i);
 }
 
-const King* Chessboard::getKing(Team team) const
+King* Chessboard::getKing(Team team) const
 {
 	if (team == Team::Player1)
 		return king1;
 	return king2;
 }
 
-const Piece* Chessboard::getPiece(char pos) const
+Piece* Chessboard::getPiece(char pos) const
 {
 	return chessboard[pos].get();
+}
+
+void Chessboard::switchPromotion(char position, char newFigure) {
+	std::unique_ptr<Piece> temp;
+	Team team = chessboard[position]->getTeam();
+	switch (tolower(newFigure)) {
+	case 'q':
+		temp = std::make_unique<Queen>(*this, team, position);
+		break;
+	case 'n':
+		temp = std::make_unique<Knight>(*this, team, position);
+		break;
+	case 'b':
+		temp = std::make_unique<Bishop>(*this, team, position);
+		break;
+	case 'r':
+		temp = std::make_unique<Rook>(*this, team, position);
+		break;
+	}
+	if (!temp)
+		return;
+	chessboard[position].swap(temp);
+	temp.reset();
 }

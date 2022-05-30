@@ -8,7 +8,7 @@ class Game
 {
 private:
 	enum class GameStatus {
-		None, InCheck, End
+		None, InCheck, Stalemate, End
 	};
 public:
 	enum class Players {
@@ -21,7 +21,7 @@ private:
 	Player* secondPlayer = nullptr;
 	GameStatus status = GameStatus::None;
 	bool isInCheck(Player* player) const;
-	bool isGameOver(Player* player);
+	bool hasMoves(Player* player);
 	void endGame() const;
 public:
 	explicit Game(Players first, Players second);

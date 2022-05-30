@@ -13,103 +13,62 @@ Game::Game(Game::Players player1, Game::Players player2) {
 
 
 bool Game::isInCheck(Player* player) const {
-	//std::string fenString = board.getFenString();
-	//char king = player->getTeam() == Team::Player1 ? 'K' : 'k';
-	//char kingOffset = 0;
-	//for (auto i : fenString) {
-	//	if (i == king)
-	//		break;
-	//	if (isdigit(i))
-	//		kingOffset += (i - '0');
-	//	else if (isalpha(i))
-	//		kingOffset += 1;
-	//}
-	//std::vector<char> moves;
-	//std::vector<char> captures;
-	//char currOffset = 0;
-	//for (auto i : fenString) {
-	//	if (isalpha(i)) {
-	//		if (islower(king) != islower(i)) {
-	//			board[currOffset]->getMoves(board, currOffset, moves, captures);
-	//		}
-	//		currOffset += 1;
-	//	}
-	//	else if (isdigit(i))
-	//		currOffset += (i - '0');
-	//}
-	//if (std::find(captures.begin(), captures.end(), kingOffset) != captures.end())
-	//	return true;
-	return false;
+	auto king = board.getKing(player->getTeam());
+	return king->inCheck() != -1;
 }
 
-
-bool Game::isGameOver(Player* player) {
-	//std::vector<char> moves;
-	//std::vector<char> captures;
-	//char currOffset = 0;
-	//char king = player->getTeam() == Team::Player1 ? 'K' : 'k';
-	//std::string fenString = board.getFenString();
-	//for (auto i : fenString) {
-	//	if (isalpha(i)) {
-	//		if (islower(king) == islower(i)) {
-	//			moves.clear();
-	//			captures.clear();
-	//			board[currOffset]->getMoves(board, currOffset, moves, captures);
-	//			for (auto j : moves) {
-	//				board.makeMove(currOffset, j);
-	//				bool cond = !isInCheck(player);
-	//				board.undoMove(j, currOffset);
-	//				if (cond)
-	//					return false;
-	//			}
-	//			for (auto j : captures) {
-	//				board.makeMove(currOffset, j);
-	//				bool cond = !isInCheck(player);
-	//				board.undoMove(j, currOffset);
-	//				if (cond)
-	//					return false;
-	//			}
-	//		}
-	//		currOffset += 1;
-	//	}
-	//	else if (isdigit(i))
-	//		currOffset += (i - '0');
-	//}
+bool Game::hasMoves(Player* player) {
+	std::vector<char> figures;
+	board.getTeamOffsets(player->getTeam(), figures);
+	std::vector<Move> availableMoves;
+	for (auto i : figures) {
+		board.getMoves(i, availableMoves);
+	}
+	if (availableMoves.empty())
+		return false;
 	return true;
 }
 
 
 void Game::play() {
-	//printer.print(board.getFenString());
-	//while (status != GameStatus::End) {
-	//	while(true) {
-	//		std::pair<char, char> move = currPlayer->getMove(board);
-	//		board.makeMove(move.first, move.second);
-	//		if (!isInCheck(currPlayer)) {
-	//			break;
-	//		}
-	//		board.undoMove(move.second, move.first);
-	//	}
-	//	std::swap(currPlayer, secondPlayer);
-	//	printer.refreshScreen(board.getFenString());
-	//	if (isInCheck(currPlayer)) {
-	//		if (isGameOver(currPlayer))
-	//			status = GameStatus::End;
-	//		else {
-	//			status = GameStatus::InCheck;
-	//			std::cout << "In check!";
-	//		}
-	//	}
-	//}
+	printer.printTeam(currPlayer->getTeam(), board);
+	while (status != GameStatus::End && status != GameStatus::Stalemate) {
+		Move move = currPlayer->getMove(board);
+		board.makeMove(move);
+		if (move.type == Move::Type::Promotion)
+			board.switchPromotion(move.cDest, move.newFigure);
+		std::swap(currPlayer, secondPlayer);
+		std::vector<char> figures;
+		board.getTeamOffsets(currPlayer->getTeam(), figures);
+		for (auto i : figures)
+			board.getPiece(i)->onNextTurn();
+		printer.clear();
+		printer.printTeam(currPlayer->getTeam(), board);
+		if (isInCheck(currPlayer)) {
+			if (!hasMoves(currPlayer))
+				status = GameStatus::End;
+			else {
+				status = GameStatus::InCheck;
+				std::cout << "In check!\n";
+			}
+		}
+		else if (!hasMoves(currPlayer))
+			status = GameStatus::Stalemate;
+	}
+	printer.clear();
+	printer.print(board.getFenString());
 	endGame();
 }
 
-
 void Game::endGame() const{
-	if (currPlayer->getTeam() == Team::Player1)
-		std::cout << "Black win!";
+	if (status == GameStatus::End) {
+		if (currPlayer->getTeam() == Team::Player1)
+			std::cout << "Black win!";
+		else
+			std::cout << "White win!";
+	}
 	else
-		std::cout << "White win!";
+		std::cout << "Stalemate!";
 }
 
 Game::~Game() {

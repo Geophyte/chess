@@ -9,5 +9,5 @@ protected:
 public:
 	Player(bool isWhite) { team = isWhite ? Team::Player1 : Team::Player2; }
 	Team getTeam() const { return team; }
-	virtual std::pair<char, char> getMove(const Chessboard& board) = 0;
+	virtual Move getMove(const Chessboard& board) = 0;
 };
