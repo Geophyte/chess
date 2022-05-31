@@ -18,39 +18,38 @@ void Rook::getMoves(std::vector<Move>& moves) const
 	auto king = chessboard.getKing(team);
 
 	// Roszada
-	if (cState != State::NotMoved)
-		return;
+	getCastling(moves);
 
+	removeIllegalMoves(moves);
+}
+
+void Rook::getCastling(std::vector<Move>& moves) const
+{
 	char row = pos / 8, col = pos % 8;
-	if ((row != 0 && row != 7) || (col != 0 && col != 7))
-		return;
+	if (cState == State::NotMoved && (row == 0 || row == 7) && (col == 0 || col == 7))
+	{
+		char castlingDir = col ? -1 : 1;
+		std::vector<std::pair<char, Piece*>> sBuff;
 
-	char castlingDir = col ? -1 : 1;
-	std::vector<std::pair<char, Piece*>> sBuff;
-	chessboard.searchDirection(pos, castlingDir, sBuff);
+		char maxDistance = col ? 3 : 4;
+		chessboard.searchDirection(pos, castlingDir, maxDistance, sBuff);
 
-	bool canCastle = true;
-	char maxDistance = col ? 2 : 3;
-	for (int i = 0; i < maxDistance; i++)
-		if (sBuff[i].second)
-		{
-			canCastle = false;
-			break;
-		}
+		for (char i = 0; i < maxDistance - 1; i++)
+			if (sBuff[i].second)
+				return;
 
-	if(canCastle && sBuff[maxDistance].second)
-		if (sBuff[maxDistance].second->getTeam() == team &&
-			sBuff[maxDistance].second->getType() == Type::King &&
-			sBuff[maxDistance].second->getState() == State::NotMoved)
-		{
-			Move temp;
-			temp.cStart = pos;
-			temp.cDest = pos + maxDistance * castlingDir;
-			temp.oStart = sBuff[maxDistance].first;
-			temp.oDest = sBuff[maxDistance].first - 2 * castlingDir;
-			temp.type = Move::Type::Castling;
-
-			if(!king->willIndangereKing(temp))
+		if (sBuff.back().second)
+			if (sBuff.back().second->getTeam() == team &&
+				sBuff.back().second->getType() == Type::King &&
+				sBuff.back().second->getState() == State::NotMoved)
+			{
+				Move temp;
+				temp.cStart = sBuff.back().first;
+				temp.cDest = sBuff.back().first - 2 * castlingDir;
+				temp.oStart = pos;
+				temp.oDest = sBuff.back().first - castlingDir;
+				temp.type = Move::Type::Castling;
 				moves.push_back(temp);
-		}
+			}
+	}
 }

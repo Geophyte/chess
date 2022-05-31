@@ -15,4 +15,5 @@ void Knight::getMoves(std::vector<Move>& moves) const
 {
 	static const std::vector<char> directions = { -17,-15,-10,-6,6,10,15,17 };
 	Piece::getMoves(directions, moves);
+	removeIllegalMoves(moves);
 }

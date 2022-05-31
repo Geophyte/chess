@@ -58,8 +58,9 @@ public:
 	virtual char getPos() const;
 	virtual void getMoves(std::vector<Move>& moves) const = 0;
 protected:
-	int getMaxDistance(Type type) const;	// zwraca maksymaln¹ iloœæ pól któr¹ mo¿e pokonaæ pionek w jednym ruchu
+	int getMaxDistance() const;	// zwraca maksymaln¹ iloœæ pól któr¹ mo¿e pokonaæ pionek w jednym ruchu
 	void getMoves(const std::vector<char>& directions, std::vector<Move>& moves) const;
+	void removeIllegalMoves(std::vector<Move>& moves) const;
 protected:
 	Chessboard& chessboard;
 	const Team team;

@@ -15,4 +15,5 @@ void Bishop::getMoves(std::vector<Move>& moves) const
 {
 	static const std::vector<char> directions = { -9, -7, 7, 9 };
 	Piece::getMoves(directions, moves);
+	removeIllegalMoves(moves);
 }

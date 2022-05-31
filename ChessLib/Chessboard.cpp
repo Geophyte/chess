@@ -39,6 +39,9 @@ Chessboard::Chessboard(const char* fen)
 		else if (isdigit(fen[i]))
 			tileIndex += fen[i] - '0';
 	}
+
+	if (!king1 || !king2)
+		throw std::invalid_argument("Need two kings to play!");
 }
 
 void Chessboard::makeMove(Move move)

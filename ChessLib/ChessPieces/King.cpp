@@ -16,47 +16,13 @@ void King::getMoves(std::vector<Move>& moves) const
 	static const std::vector<char> directions = { -9, -8, -7, -1, 1, 7, 8, 9 };
 	Piece::getMoves(directions, moves);
 
-	//// Roszada
-	//if (cState != State::NotMoved)
-	//	return;
+	// Roszada
+	getCastling(moves);
 
-	//char row = pos / 8, col = pos % 8;
-	//if ((row != 0 && row != 7) || col != 4)
-	//	return;
-
-	//static const std::vector<char> castlingDirs = { -1, 1 };
-	//for (const auto& direction : castlingDirs)
-	//{
-	//	std::vector<std::pair<char, Piece*>> sBuff;
-	//	chessboard.searchDirection(pos, direction, sBuff);
-
-	//	bool canCastle = true;
-	//	for (int i = 0; i < sBuff.size() - 1; i++)
-	//		if (sBuff[i].second)
-	//		{
-	//			canCastle = false;
-	//			break;
-	//		}
-
-	//	if(canCastle && sBuff.size() && sBuff.back().second)
-	//		if (sBuff.back().second->getTeam() == team &&
-	//			sBuff.back().second->getType() == Type::Rook &&
-	//			sBuff.back().second->getState() == State::NotMoved)
-	//		{
-	//			Move temp;
-	//			temp.cStart = pos;
-	//			temp.cDest = pos + 2 * direction;
-	//			temp.oStart = sBuff.back().first;
-	//			temp.oDest = pos + direction;
-	//			temp.type = Move::Type::Castling;
-
-	//			if (willIndangereKing(temp))
-	//				moves.push_back(temp);
-	//		}
-	//}
+	removeIllegalMoves(moves);
 }
 
-bool King::willIndangereKing(Move move) const
+bool King::willIndangereKing(const Move& move) const
 {
 	bool result;
 
@@ -139,4 +105,15 @@ char King::inCheck() const
 	}
 
 	return -1;
+}
+
+void King::getCastling(std::vector<Move>& moves) const
+{
+	Rook* lRook = dynamic_cast<Rook*>(chessboard.getPiece(pos - 4));
+	Rook* rRook = dynamic_cast<Rook*>(chessboard.getPiece(pos + 3));
+
+	if (lRook)
+		lRook->getCastling(moves);
+	if (rRook)
+		rRook->getCastling(moves);
 }

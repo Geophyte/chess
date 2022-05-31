@@ -27,36 +27,32 @@ void ChessboardPrinter::printMoves(char pos, const Chessboard& board) const
 	std::vector<Move> buff;
 	board.getMoves(pos, buff);
 
-	std::vector<char> moves, captures, specials;
+	auto info = getChessboardTiles(fen.c_str());
+	for (const auto& move : buff)
 	{
-		for (const auto& move : buff)
+		switch (move.type)
 		{
-			switch (move.type)
-			{
-			case Move::Type::Move:
-				moves.push_back(move.cDest);
-				break;
-			case Move::Type::Capture:
-				captures.push_back(move.cDest);
-				break;
-			case Move::Type::Castling:
-			case Move::Type::Promotion:
-			case Move::Type::EnPassant:
-				specials.push_back(move.oStart);
-				break;
-			}
+		case Move::Type::Move:
+			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_GREEN;
+			break;
+		case Move::Type::Capture:
+			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_YELLOW;
+			break;
+		case Move::Type::Castling:
+			info[move.cStart / 8][(size_t)move.cStart % 8 + 1].bgColor = COLOR_CYAN;
+			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_MAGENTA;
+			info[move.oStart / 8][(size_t)move.oStart % 8 + 1].bgColor = COLOR_CYAN;
+			info[move.oDest / 8][(size_t)move.oDest % 8 + 1].bgColor = COLOR_MAGENTA;
+			break;
+		case Move::Type::Promotion:
+			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_MAGENTA;
+			break;
+		case Move::Type::EnPassant:
+			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_MAGENTA;
+			info[move.oStart / 8][(size_t)move.oStart % 8 + 1].bgColor = COLOR_YELLOW;
+			break;
 		}
 	}
-
-	auto info = getChessboardTiles(fen.c_str());
-	info[pos / 8][(size_t)pos % 8 + 1].bgColor = COLOR_CYAN;
-
-	for (const auto& move : moves)
-		info[move / 8][(size_t)move % 8 + 1].bgColor = COLOR_GREEN;
-	for (const auto& capture : captures)
-		info[capture / 8][(size_t)capture % 8 + 1].bgColor = COLOR_YELLOW;
-	for (const auto& special : specials)
-		info[special / 8][(size_t)special % 8 + 1].bgColor = COLOR_MAGENTA;
 
 	print(info);
 }

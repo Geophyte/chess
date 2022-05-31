@@ -9,6 +9,8 @@ public:
 	virtual Type getType() const override;
 	virtual void getMoves(std::vector<Move>& moves) const override;
 
-	bool willIndangereKing(Move move) const;	// sprawdza czy ruch narazi króla na niebezpieczeñstwo
+	bool willIndangereKing(const Move& move) const;	// sprawdza czy ruch narazi króla na niebezpieczeñstwo
 	char inCheck() const; // zwraca indeks szachuj¹cego pionka lub -1 jeœli nie jest szachowany
+
+	void getCastling(std::vector<Move>& moves) const;	// zwraca ruch roszady
 };

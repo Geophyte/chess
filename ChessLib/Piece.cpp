@@ -53,9 +53,9 @@ Piece::operator char()
 	return temp;
 }
 
-int Piece::getMaxDistance(Type type) const
+int Piece::getMaxDistance() const
 {
-	switch (type)
+	switch (getType())
 	{
 	case Piece::Type::Rook:
 	case Piece::Type::Bishop:
@@ -81,33 +81,40 @@ char Piece::getPos() const
 
 void Piece::getMoves(const std::vector<char>& directions, std::vector<Move>& moves) const
 {
-	auto king = chessboard.getKing(team);
-
 	for (const auto& direction : directions)
 	{
 		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, direction, getMaxDistance(getType()), sBuff);
+		chessboard.searchDirection(pos, direction, getMaxDistance(), sBuff);
 
 		char maxDistance = sBuff.size();
-		for (int i = 0; i< maxDistance; i++)
+		for (int i = 0; i < maxDistance; i++)
 		{
 			if (!sBuff[i].second)
 			{
 				Move temp = { pos, sBuff[i].first, pos, sBuff[i].first, Move::Type::Move };
-				if(!king->willIndangereKing(temp))
-					moves.push_back(temp);
+				moves.push_back(temp);
 				continue;
 			}
 			else if (sBuff[i].second->getTeam() != team)
 			{
 				Move temp = { pos, sBuff[i].first, sBuff[i].first, sBuff[i].first, Move::Type::Capture };
-				if(!king->willIndangereKing(temp))
-					moves.push_back(temp);
+				moves.push_back(temp);
 			}
 
 			break;
 		}
 	}
+}
+
+void Piece::removeIllegalMoves(std::vector<Move>& moves) const
+{
+	King* king = chessboard.getKing(team);
+	std::vector<Move> result;
+
+	for (const auto& move : moves)
+		if (!king->willIndangereKing(move))
+			result.push_back(move);
+	moves = result;
 }
 
 bool Move::operator<(const Move& other) const

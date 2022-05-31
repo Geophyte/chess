@@ -15,7 +15,7 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 {
 	char moveDirection;
 	std::vector<char> captureDirections;
-	char maxDistance = getMaxDistance(getType());
+	char maxDistance = getMaxDistance();
 	auto king = chessboard.getKing(team);
 
 	if (team == Team::Player1)
@@ -32,7 +32,7 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 	// Generowanie ruchow i promocji
 	{
 		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, moveDirection, getMaxDistance(getType()), sBuff);
+		chessboard.searchDirection(pos, moveDirection, getMaxDistance(), sBuff);
 
 		char maxDistance = sBuff.size();
 		for (int i = 0; i < maxDistance; i++)
@@ -43,8 +43,7 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 				if (sBuff[i].first / 8 == 0 || sBuff[i].first / 8 == 7)
 					temp.type = Move::Type::Promotion;
 
-				if (!king->willIndangereKing(temp))
-					moves.push_back(temp);
+				moves.push_back(temp);
 			}
 			else
 				break;
@@ -65,8 +64,7 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 				if (sBuff[i].second->getTeam() != team)
 				{
 					Move temp = { pos, sBuff[i].first, sBuff[i].first, sBuff[i].first, Move::Type::Capture };
-					if (!king->willIndangereKing(temp))
-						moves.push_back(temp);
+					moves.push_back(temp);
 					continue;
 				}
 
@@ -80,9 +78,10 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 					(currentRow == 3 || currentRow == 4))
 				{
 					Move temp = { pos, sBuff[i].first, capturePos, capturePos, Move::Type::EnPassant };
-					if (!king->willIndangereKing(temp))
-						moves.push_back(temp);
+					moves.push_back(temp);
 				}
 		}
 	}
+
+	removeIllegalMoves(moves);
 }
