@@ -33,7 +33,7 @@ bool Game::hasMoves(Player* player) {
 void Game::play() {
 	printer.printTeam(currPlayer->getTeam(), board);
 	while (status != GameStatus::End && status != GameStatus::Stalemate) {
-		Move move = currPlayer->getMove(board);
+		Move move = currPlayer->getMove(board, printer);
 		board.makeMove(move);
 		if (move.type == Move::Type::Promotion)
 			board.switchPromotion(move.cDest, move.newFigure);
