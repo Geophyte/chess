@@ -61,6 +61,16 @@ bool Piece::canMove() const
 	return moves.size();
 }
 
+bool Piece::canPromote() const
+{
+	return canPromote(pos);
+}
+
+bool Piece::canPromote(char pos) const
+{
+	return getType() == Type::Pawn && cState != State::NotMoved && (pos / 8 == 0 || pos / 8 == 7);
+}
+
 int Piece::getMaxDistance() const
 {
 	switch (getType())
@@ -120,14 +130,8 @@ void Piece::removeIllegalMoves(std::vector<Move>& moves) const
 	std::vector<Move> result;
 
 	for (const auto& move : moves)
-	{
-		if (move.type == Move::Type::Capture &&
-			getType() == Type::King &&
-			getType() == chessboard.getPiece(move.cDest)->getType())
-			continue;
 		if (!king->willIndangereKing(move))
 			result.push_back(move);
-	}
 	moves = result;
 }
 

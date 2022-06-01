@@ -39,9 +39,6 @@ void ChessboardPrinter::printMoves(char pos, const Chessboard& board) const
 			info[move.oStart / 8][(size_t)move.oStart % 8 + 1].bgColor = COLOR_CYAN;
 			info[move.oDest / 8][(size_t)move.oDest % 8 + 1].bgColor = COLOR_MAGENTA;
 			break;
-		case Move::Type::Promotion:
-			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_MAGENTA;
-			break;
 		case Move::Type::EnPassant:
 			info[move.cDest / 8][(size_t)move.cDest % 8 + 1].bgColor = COLOR_MAGENTA;
 			info[move.oStart / 8][(size_t)move.oStart % 8 + 1].bgColor = COLOR_YELLOW;

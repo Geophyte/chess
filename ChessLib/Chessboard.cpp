@@ -53,7 +53,6 @@ void Chessboard::makeMove(Move move)
 
 	switch (move.type)
 	{
-	case Move::Type::Promotion:
 	case Move::Type::Move:
 		chessboard[move.cStart].swap(chessboard[move.cDest]);
 		break;
@@ -74,7 +73,6 @@ void Chessboard::undoMove(Move move)
 {
 	switch (move.type)
 	{
-	case Move::Type::Promotion:
 	case Move::Type::Move:
 		chessboard[move.cStart].swap(chessboard[move.cDest]);
 		break;
@@ -183,20 +181,20 @@ Piece* Chessboard::getPiece(char pos) const
 	return chessboard[pos].get();
 }
 
-void Chessboard::switchPromotion(char position, char newFigure) {
+void Chessboard::switchPromotion(char position, Piece::Type type) {
 	std::unique_ptr<Piece> temp;
 	Team team = chessboard[position]->getTeam();
-	switch (tolower(newFigure)) {
-	case 'q':
+	switch (type) {
+	case Piece::Type::Queen:
 		temp = std::make_unique<Queen>(*this, team, position);
 		break;
-	case 'n':
+	case Piece::Type::Knight:
 		temp = std::make_unique<Knight>(*this, team, position);
 		break;
-	case 'b':
+	case Piece::Type::Bishop:
 		temp = std::make_unique<Bishop>(*this, team, position);
 		break;
-	case 'r':
+	case Piece::Type::Rook:
 		temp = std::make_unique<Rook>(*this, team, position);
 		break;
 	}

@@ -9,4 +9,5 @@ private:
 public:
 	HumanPlayer(Team team, std::istream& stream = std::cin) : Player(team), inputStream(stream) {}
 	virtual Move getMove(const Chessboard& board, const ChessboardPrinter& printer) const;
+	virtual Piece::Type getPromotion() const;
 };

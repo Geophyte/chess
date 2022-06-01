@@ -10,7 +10,7 @@ Move HumanPlayer::getMove(const Chessboard& board, const ChessboardPrinter& prin
 		getline(inputStream, input);
 		printer.clear();
 		printer.printTeam(this->getTeam(), board);
-		if (input.length() == 2 || input.length() == 5 || input.length() == 6) {
+		if (input.length() == 2 || input.length() == 5) {
 			char xFrom, yFrom;
 			xFrom = input[0]; yFrom = input[1];
 			char offsetFrom = ('8' - yFrom) * 8 + (xFrom - 'a');
@@ -41,17 +41,21 @@ Move HumanPlayer::getMove(const Chessboard& board, const ChessboardPrinter& prin
 						break;
 					}
 				}
-				if (i < moves.size() && moves[i].type == Move::Type::Promotion && input.length() == 6) {
-					condition = true;
-					char newFig = input[5];
-					char temp = tolower(newFig);
-					if (temp == 'q' || temp == 'n' || temp == 'r' || temp == 'b') {
-						userMove.newFigure = newFig;
-						condition = false;
-					}
-				}
 			}
 		}
 	}
 	return userMove;
+}
+
+Piece::Type HumanPlayer::getPromotion() const
+{
+	while (true)
+	{
+		char fig;
+		inputStream >> fig;
+		fig = tolower(fig);
+
+		if (fig == 'q' || fig == 'n' || fig == 'r' || fig == 'b')
+			return static_cast<Piece::Type>(fig);
+	}
 }

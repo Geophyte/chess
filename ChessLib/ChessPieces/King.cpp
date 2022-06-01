@@ -38,7 +38,22 @@ bool King::willIndangereKing(const Move& move) const
 
 char King::inCheck() const
 {
-	std::vector<char> directions = { -8, -1, 1, 8 };
+	std::vector<char> directions = { -9, -8, -7, -1, 1, 7, 8, 9 };
+	for (const auto& direction : directions)
+	{
+		std::vector<std::pair<char, Piece*>> sBuff;
+		chessboard.searchDirection(pos, direction, 1, sBuff);
+
+		for (const auto& i : sBuff)
+			if (i.second)
+				if (i.second->getTeam() != team &&
+					i.second->getType() == Type::King)
+					return i.first;
+				else
+					break;
+	}
+
+	directions = { -8, -1, 1, 8 };
 	for (const auto& direction : directions)
 	{
 		std::vector<std::pair<char, Piece*>> sBuff;

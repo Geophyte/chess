@@ -26,7 +26,7 @@ public:
 	std::string getFenString() const;	// zwraca aktualne po³o¿enie figur jako FEN string
 	void getMoves(char pos, std::vector<Move>& moves) const;	// zwraca mo¿liwe do wykonania ruchy przez figurê na danej pozycji
 	void getTeamOffsets(Team team, std::vector<char>& offsets) const;
-	void switchPromotion(char position, char newFigure);
+	void switchPromotion(char position, Piece::Type type);
 	King* getKing(Team team) const;
 	Piece* getPiece(char pos) const;
 private:

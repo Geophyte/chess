@@ -13,10 +13,8 @@ struct Move
 						// np. pozycja zbijanego pionka, pozycja pocz¹tkowa i koñcowa króla z którym bêdzie roszada
 	enum class Type : char
 	{
-		Move, Capture, Castling, Promotion, EnPassant
+		Move, Capture, Castling, EnPassant
 	} type;
-
-	char newFigure; // for en passat move
 
 	bool operator<(const Move& other) const;
 };
@@ -31,7 +29,7 @@ class Piece
 public:
 	enum class Type : char
 	{
-		None = ' ', King = 'k', Queen = 'q', Bishop = 'b', Knight = 'n', Rook = 'r', Pawn = 'p'
+		King = 'k', Queen = 'q', Bishop = 'b', Knight = 'n', Rook = 'r', Pawn = 'p'
 	};
 	enum class State : char
 	{
@@ -54,6 +52,8 @@ public:
 
 	operator char();
 	bool canMove() const;
+	bool canPromote() const;
+	bool canPromote(char pos) const;
 
 	virtual Type getType() const = 0;
 	virtual char getPos() const;

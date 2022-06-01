@@ -32,12 +32,12 @@ bool Game::hasMoves(Player* player) {
 
 
 void Game::play(unsigned delay) {
-	printer.printTeam(currPlayer->getTeam(), board);
+	printer.print(board.getFenString());
 	while (status != GameStatus::End && status != GameStatus::Stalemate) {
 		Move move = currPlayer->getMove(board, printer);
 		board.makeMove(move);
-		if (move.type == Move::Type::Promotion)
-			board.switchPromotion(move.cDest, move.newFigure);
+		if (board.getPiece(move.cDest)->canPromote())
+			board.switchPromotion(move.cDest, currPlayer->getPromotion());
 		currPlayer.swap(secondPlayer);
 		std::vector<char> figures;
 		board.getTeamOffsets(currPlayer->getTeam(), figures);
@@ -48,7 +48,7 @@ void Game::play(unsigned delay) {
 		std::this_thread::sleep_for(duration);
 
 		printer.clear();
-		printer.printTeam(currPlayer->getTeam(), board);
+		printer.print(board.getFenString());
 		if (isInCheck(currPlayer.get())) {
 			if (!hasMoves(currPlayer.get()))
 				status = GameStatus::End;

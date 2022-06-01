@@ -40,9 +40,6 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 			if (!sBuff[i].second)
 			{
 				Move temp = { pos, sBuff[i].first, pos, sBuff[i].first, Move::Type::Move };
-				if (sBuff[i].first / 8 == 0 || sBuff[i].first / 8 == 7)
-					temp.type = Move::Type::Promotion;
-
 				moves.push_back(temp);
 			}
 			else

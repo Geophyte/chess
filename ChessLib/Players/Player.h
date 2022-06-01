@@ -15,4 +15,5 @@ public:
 	Player(Team team) : team(team) {}
 	Team getTeam() const { return team; }
 	virtual Move getMove(const Chessboard& board, const ChessboardPrinter& printer) const = 0;
+	virtual Piece::Type getPromotion() const = 0;
 };

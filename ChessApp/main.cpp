@@ -5,10 +5,10 @@
 int main()
 {
     Game game(Player::Type::RandomPlayer, Player::Type::RandomPlayer);
-    game.play(2);
+    game.play(200);
 
     //ChessboardPrinter printer;
-    //Chessboard board("r3k2r/8/8/8/8/8/8/R3K2R");
+    //Chessboard board("8/8/3k4/8/3K4/8/8/8");
 
     //std::vector<char> buffer;
     //board.getTeamOffsets(Team::Player2, buffer);
