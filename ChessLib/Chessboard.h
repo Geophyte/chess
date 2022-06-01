@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 #include <stdexcept>
+#include <iostream>
 
 class Chessboard
 {

@@ -5,15 +5,10 @@ ChessboardPrinter::ChessboardPrinter(Color player1, Color player2, Color backgro
 {
 }
 
-void ChessboardPrinter::print(const char* fen) const
-{
-	auto info = getChessboardTiles(fen);
-	print(info);
-}
-
 void ChessboardPrinter::print(std::string fen) const
 {
-	print(fen.c_str());
+	auto info = getChessboardTiles(fen.c_str());
+	print(info);
 }
 
 void ChessboardPrinter::clear() const
@@ -180,6 +175,7 @@ std::array<std::array<ChessboardPrinter::TileInfo, 9>, 9> ChessboardPrinter::get
 			arr[i][j + 1].bgColor = (i + j) % 2 ? background1 : background2;
 		}
 	}
+	arr[8][0].character = ' ';
 	for (size_t i = 1; i < 9; i++)
 	{
 		arr[8][i].character = 'a' - 1 + i;

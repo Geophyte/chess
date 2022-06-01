@@ -10,21 +10,18 @@ private:
 	enum class GameStatus {
 		None, InCheck, Stalemate, End
 	};
-public:
-	enum class Players {
-		Computer, Human
-	};
 private:
 	Chessboard board;
 	ChessboardPrinter printer;
-	Player* currPlayer = nullptr;
-	Player* secondPlayer = nullptr;
+	std::unique_ptr<Player> currPlayer = nullptr;
+	std::unique_ptr<Player> secondPlayer = nullptr;
 	GameStatus status = GameStatus::None;
 	bool isInCheck(Player* player) const;
 	bool hasMoves(Player* player);
 	void endGame() const;
 public:
-	explicit Game(Players first, Players second);
-	~Game();
-	void play();
+	explicit Game(Player::Type first, Player::Type second);
+	void play(unsigned delay = 0);	// Rozpoczyna rozgrywke, delay to czas miedzy rundami wyrazony w milisekundach
+private:
+	void initPlayer(Team team, Player::Type type, std::unique_ptr<Player>& player) const;
 };

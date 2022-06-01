@@ -53,6 +53,7 @@ public:
 	virtual void onNextTurn();	// funkcja wywo³yna na koniec tury (kiedy obydwaj gracze wykonali ruch)
 
 	operator char();
+	bool canMove() const;
 
 	virtual Type getType() const = 0;
 	virtual char getPos() const;

@@ -203,5 +203,4 @@ void Chessboard::switchPromotion(char position, char newFigure) {
 	if (!temp)
 		return;
 	chessboard[position].swap(temp);
-	temp.reset();
 }

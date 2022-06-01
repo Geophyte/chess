@@ -109,8 +109,15 @@ char King::inCheck() const
 
 void King::getCastling(std::vector<Move>& moves) const
 {
-	Rook* lRook = dynamic_cast<Rook*>(chessboard.getPiece(pos - 4));
-	Rook* rRook = dynamic_cast<Rook*>(chessboard.getPiece(pos + 3));
+	char lRookOff = pos - 4;
+	char rRookOff = pos + 3;
+	Rook* lRook = nullptr;
+	Rook* rRook = nullptr;
+
+	if (0 <= lRookOff)
+		lRook = dynamic_cast<Rook*>(chessboard.getPiece(pos - 4));
+	if(rRookOff < 64)
+		rRook = dynamic_cast<Rook*>(chessboard.getPiece(pos + 3));
 
 	if (lRook)
 		lRook->getCastling(moves);

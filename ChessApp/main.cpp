@@ -4,8 +4,8 @@
 
 int main()
 {
-    Game game(Game::Players::Human, Game::Players::Human);
-    game.play();
+    Game game(Player::Type::RandomPlayer, Player::Type::RandomPlayer);
+    game.play(2);
 
     //ChessboardPrinter printer;
     //Chessboard board("r3k2r/8/8/8/8/8/8/R3K2R");

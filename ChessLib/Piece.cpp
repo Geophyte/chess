@@ -53,6 +53,14 @@ Piece::operator char()
 	return temp;
 }
 
+bool Piece::canMove() const
+{
+	std::vector<Move> moves;
+	getMoves(moves);
+
+	return moves.size();
+}
+
 int Piece::getMaxDistance() const
 {
 	switch (getType())
@@ -112,8 +120,14 @@ void Piece::removeIllegalMoves(std::vector<Move>& moves) const
 	std::vector<Move> result;
 
 	for (const auto& move : moves)
+	{
+		if (move.type == Move::Type::Capture &&
+			getType() == Type::King &&
+			getType() == chessboard.getPiece(move.cDest)->getType())
+			continue;
 		if (!king->willIndangereKing(move))
 			result.push_back(move);
+	}
 	moves = result;
 }
 

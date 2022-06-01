@@ -30,8 +30,8 @@ public:
 public:
 	ChessboardPrinter(Color player1 = COLOR_BLUE, Color player2 = COLOR_RED, Color background1 = COLOR_WHITE, Color background2 = COLOR_BLACK);
 
-	void print(const char* fen) const;	// ci¹g znaków FEN, du¿a litera = player1, ma³a litera = player2
-	void print(std::string fen) const;	// p - pionek, r - wie¿a, n - skoczek, b - goniec, q - hetman, k - król, / - koniec wiersza, [1-9] - liczba pustych miejsc
+	void print(std::string fen) const;	// ci¹g znaków FEN, du¿a litera = player1, ma³a litera = player2
+										// p - pionek, r - wie¿a, n - skoczek, b - goniec, q - hetman, k - król, / - koniec wiersza, [1-9] - liczba pustych miejsc
 	void clear() const;
 
 	void printMoves(char pos, const Chessboard& board) const;

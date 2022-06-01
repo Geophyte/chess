@@ -1,14 +1,15 @@
 #include "Game.h"
 #include "Players/HumanPlayer.h"
+#include "Players/RandomPlayer.h"
+
 #include <algorithm>
 #include <memory>
+#include <thread>
+#include <chrono>
 
-Game::Game(Game::Players player1, Game::Players player2) {
-	Game::Players p[] = { player1, player2 };
-	if (player1 == Game::Players::Human)
-		currPlayer = new HumanPlayer(1);
-	if (player2 == Game::Players::Human)
-		secondPlayer = new HumanPlayer(0);
+Game::Game(Player::Type first, Player::Type second) {
+	initPlayer(Team::Player1, first, currPlayer);
+	initPlayer(Team::Player2, second, secondPlayer);
 }
 
 
@@ -30,29 +31,33 @@ bool Game::hasMoves(Player* player) {
 }
 
 
-void Game::play() {
+void Game::play(unsigned delay) {
 	printer.printTeam(currPlayer->getTeam(), board);
 	while (status != GameStatus::End && status != GameStatus::Stalemate) {
 		Move move = currPlayer->getMove(board, printer);
 		board.makeMove(move);
 		if (move.type == Move::Type::Promotion)
 			board.switchPromotion(move.cDest, move.newFigure);
-		std::swap(currPlayer, secondPlayer);
+		currPlayer.swap(secondPlayer);
 		std::vector<char> figures;
 		board.getTeamOffsets(currPlayer->getTeam(), figures);
 		for (auto i : figures)
 			board.getPiece(i)->onNextTurn();
+
+		std::chrono::milliseconds duration(delay);
+		std::this_thread::sleep_for(duration);
+
 		printer.clear();
 		printer.printTeam(currPlayer->getTeam(), board);
-		if (isInCheck(currPlayer)) {
-			if (!hasMoves(currPlayer))
+		if (isInCheck(currPlayer.get())) {
+			if (!hasMoves(currPlayer.get()))
 				status = GameStatus::End;
 			else {
 				status = GameStatus::InCheck;
 				std::cout << "In check!\n";
 			}
 		}
-		else if (!hasMoves(currPlayer))
+		else if (!hasMoves(currPlayer.get()))
 			status = GameStatus::Stalemate;
 	}
 	printer.clear();
@@ -60,18 +65,26 @@ void Game::play() {
 	endGame();
 }
 
+void Game::initPlayer(Team team, Player::Type type, std::unique_ptr<Player>& player) const
+{
+	switch (type)
+	{
+	case Player::Type::HumanPlayer:
+		player = std::make_unique<HumanPlayer>(team);
+		break;
+	case Player::Type::RandomPlayer:
+		player = std::make_unique<RandomPlayer>(team);
+		break;
+	}
+}
+
 void Game::endGame() const{
 	if (status == GameStatus::End) {
 		if (currPlayer->getTeam() == Team::Player1)
-			std::cout << "Black win!";
+			std::cout << "Red win!"; //"Black win!";
 		else
-			std::cout << "White win!";
+			std::cout << "Blue win!"; //"White win!";
 	}
 	else
 		std::cout << "Stalemate!";
-}
-
-Game::~Game() {
-	delete currPlayer;
-	delete secondPlayer;
 }

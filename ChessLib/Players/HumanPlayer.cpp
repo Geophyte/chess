@@ -2,7 +2,7 @@
 #include "../Chessboard.h"
 #include <algorithm>
 
-Move HumanPlayer::getMove(const Chessboard& board, const ChessboardPrinter& printer) {
+Move HumanPlayer::getMove(const Chessboard& board, const ChessboardPrinter& printer) const {
 	bool condition = true;
 	Move userMove;
 	while (condition) {
