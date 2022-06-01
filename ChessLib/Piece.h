@@ -6,18 +6,7 @@
 
 class Chessboard;
 
-struct Move
-{
-	char cStart, cDest;	// startowa i koñcowa pozycja pionka wykonuj¹cego ruch
-	char oStart, oDest;	// startowa i koñcowa pozycja pionka na którego dany ruch bêdzie wywiera³ wp³yw
-						// np. pozycja zbijanego pionka, pozycja pocz¹tkowa i koñcowa króla z którym bêdzie roszada
-	enum class Type : char
-	{
-		Move, Capture, Castling, EnPassant
-	} type;
-
-	bool operator<(const Move& other) const;
-};
+struct Move;
 
 enum class Team : char
 {
@@ -29,7 +18,7 @@ class Piece
 public:
 	enum class Type : char
 	{
-		King = 'k', Queen = 'q', Bishop = 'b', Knight = 'n', Rook = 'r', Pawn = 'p'
+		None = ' ', King = 'k', Queen = 'q', Bishop = 'b', Knight = 'n', Rook = 'r', Pawn = 'p'
 	};
 	enum class State : char
 	{
@@ -50,7 +39,7 @@ public:
 	virtual void onMove(char pos);		// funkcja wywo³yna kiedy pionek siê poruszy
 	virtual void onNextTurn();	// funkcja wywo³yna na koniec tury (kiedy obydwaj gracze wykonali ruch)
 
-	operator char();
+	operator char() const;
 	bool canMove() const;
 	bool canPromote() const;
 	bool canPromote(char pos) const;
@@ -67,4 +56,18 @@ protected:
 	const Team team;
 	char pos;
 	State cState, lState;	// current State i last State
+};
+
+struct Move
+{
+	char cStart, cDest;	// startowa i koñcowa pozycja pionka wykonuj¹cego ruch
+	char oStart, oDest;	// startowa i koñcowa pozycja pionka na którego dany ruch bêdzie wywiera³ wp³yw
+						// np. pozycja zbijanego pionka, pozycja pocz¹tkowa i koñcowa króla z którym bêdzie roszada
+	enum class Type : char
+	{
+		Move, Capture, Castling, EnPassant
+	} type;
+
+	Piece::Type promoteFigure = Piece::Type::None;
+	bool operator<(const Move& other) const;
 };

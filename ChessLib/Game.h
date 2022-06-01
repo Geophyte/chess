@@ -2,21 +2,21 @@
 #include "Chessboard.h"
 #include "ChessboardPrinter.h"
 #include "Players/Player.h"
-
+#include "FileMoveWriter.h"
+#include "GameStatus.h"
 
 class Game
 {
 private:
-	enum class GameStatus {
-		None, InCheck, Stalemate, End
-	};
-private:
+	int movesPlayed = 0;
 	Chessboard board;
 	ChessboardPrinter printer;
+	FileMoveWriter writer;
 	std::unique_ptr<Player> currPlayer = nullptr;
 	std::unique_ptr<Player> secondPlayer = nullptr;
 	GameStatus status = GameStatus::None;
 	bool isInCheck(Player* player) const;
+	bool onlyKingsLeft() const;
 	bool hasMoves(Player* player);
 	void endGame() const;
 public:

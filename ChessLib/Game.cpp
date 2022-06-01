@@ -31,13 +31,24 @@ bool Game::hasMoves(Player* player) {
 }
 
 
+bool Game::onlyKingsLeft() const {
+	std::vector<char> figures;
+	board.getTeamOffsets(currPlayer->getTeam(), figures);
+	board.getTeamOffsets(secondPlayer->getTeam(), figures);
+	return figures.size() == 2;
+}
+
+
 void Game::play(unsigned delay) {
 	printer.print(board.getFenString());
 	while (status != GameStatus::End && status != GameStatus::Stalemate) {
 		Move move = currPlayer->getMove(board, printer);
 		board.makeMove(move);
-		if (board.getPiece(move.cDest)->canPromote())
-			board.switchPromotion(move.cDest, currPlayer->getPromotion());
+		if (board.getPiece(move.cDest)->canPromote()) {
+			std::cout << "Choose figure for promotion (q, r, b, n): \n";
+			move.promoteFigure = currPlayer->getPromotion();
+			board.switchPromotion(move.cDest, move.promoteFigure);
+		}
 		currPlayer.swap(secondPlayer);
 		std::vector<char> figures;
 		board.getTeamOffsets(currPlayer->getTeam(), figures);
@@ -57,8 +68,16 @@ void Game::play(unsigned delay) {
 				std::cout << "In check!\n";
 			}
 		}
-		else if (!hasMoves(currPlayer.get()))
+		else if (!hasMoves(currPlayer.get()) || onlyKingsLeft())
 			status = GameStatus::Stalemate;
+		else
+			status = GameStatus::None;
+		if (movesPlayed % 2 == 0)
+			writer.write(move, board, status, movesPlayed / 2 + 1);
+		else
+			writer.write(move, board, status);
+		++movesPlayed;
+
 	}
 	printer.clear();
 	printer.print(board.getFenString());

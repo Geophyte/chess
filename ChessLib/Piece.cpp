@@ -43,7 +43,7 @@ void Piece::onNextTurn()
 		cState = State::Moved;
 }
 
-Piece::operator char()
+Piece::operator char() const
 {
 	char temp = static_cast<char>(getType());
 

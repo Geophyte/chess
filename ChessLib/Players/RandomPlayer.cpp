@@ -41,5 +41,6 @@ Piece::Type RandomPlayer::getPromotion() const
 	std::vector<Piece::Type> promotionTypes = { Piece::Type::Rook, Piece::Type::Knight, Piece::Type::Bishop, Piece::Type::Queen };
 	std::uniform_int_distribution<> promotiontDistr(0, promotionTypes.size() - 1);
 	Piece::Type type = promotionTypes[promotiontDistr(gen)];
+	std::cout << static_cast<char>(type) << std::endl;
 	return type;
 }
