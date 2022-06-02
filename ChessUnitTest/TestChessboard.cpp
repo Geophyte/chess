@@ -239,4 +239,122 @@ TEST_CLASS(ChessboardUnitTest)
 			i++;
 		}
 	}
+	TEST_METHOD(TestLongCastlingMove)
+	{
+		Chessboard board("r3kbnr/p3pppp/2n5/qppp1b2/5PP1/P4N1B/1PPPP2P/RNBQK2R");
+		char pos = 4;
+		std::vector<Move> moves;
+		std::vector<Move> castlings;
+		board.getMoves(pos, moves);
+		for (const auto& move : moves) {
+			if (move.type == Move::Type::Castling)
+				castlings.push_back(move);
+		}
+		Assert::AreEqual(int(castlings.size()), 1);
+		Assert::AreEqual(castlings[0].cStart, char(4));
+		Assert::AreEqual(castlings[0].cDest, char(2));
+		Assert::AreEqual(castlings[0].oStart, char(0));
+		Assert::AreEqual(castlings[0].oDest, char(3));
+	}
+	TEST_METHOD(TestShortCastlingMove)
+	{
+		Chessboard board("r3kbnr/p3pppp/2n5/qppp1b2/5PP1/P4N1B/1PPPP2P/RNBQK2R");
+		char pos = 60;
+		std::vector<Move> moves;
+		std::vector<Move> castlings;
+		board.getMoves(pos, moves);
+		for (const auto& move : moves) {
+			if (move.type == Move::Type::Castling)
+				castlings.push_back(move);
+		}
+		Assert::AreEqual(int(castlings.size()), 1);
+		Assert::AreEqual(castlings[0].cStart, char(60));
+		Assert::AreEqual(castlings[0].cDest, char(62));
+		Assert::AreEqual(castlings[0].oStart, char(63));
+		Assert::AreEqual(castlings[0].oDest, char(61));
+	}
+	TEST_METHOD(TestCastlingAfterMove)
+	{
+		Chessboard board("r3kbnr/p3pppp/2n5/qppp1b2/5PP1/P4N1B/1PPPP2P/RNBQK2R");
+		std::string startFen = board.getFenString();
+		// move rook somewhere and then return it to the start position
+		Move move1 = { 0, 1, 0, 1, Move::Type::Move };
+		Move moveBack = { 1, 0, 1, 0, Move::Type::Move };
+		board.makeMove(move1);
+		board.makeMove(moveBack);
+		Assert::AreEqual(startFen, board.getFenString());
+		// check if castling move is still possible
+		std::vector<Move> moves;
+		std::vector<Move> castlings;
+		board.getMoves(4, moves);
+		for (const auto& move : moves) {
+			if (move.type == Move::Type::Castling)
+				castlings.push_back(move);
+		}
+		Assert::IsTrue(castlings.empty());
+	}
+	TEST_METHOD(TestEnPassantSuccessful)
+	{
+		Chessboard board;
+		board.makeMove({ 53, 37, 53, 37, Move::Type::Move });
+		board.makeMove({ 37, 29, 37, 29, Move::Type::Move });
+		board.makeMove({ 14, 30, 14, 30, Move::Type::Move });
+		board.getPiece(29)->onNextTurn();
+		std::string expected = "rnbqkbnr/pppppp1p/8/5Pp1/8/8/PPPPP1PP/RNBQKBNR";
+		Assert::AreEqual(board.getFenString(), expected);
+		std::vector<Move> moves;
+		std::vector<Move> enPassant;
+		board.getMoves(29, moves);
+		for (const auto& move : moves) {
+			if (move.type == Move::Type::EnPassant)
+				enPassant.push_back(move);
+		}
+		Assert::AreEqual(int(enPassant.size()), 1);
+		Assert::AreEqual(enPassant[0].cStart, char(29));
+		Assert::AreEqual(enPassant[0].cDest, char(22));
+		Assert::AreEqual(enPassant[0].oStart, char(30));
+		Assert::AreEqual(enPassant[0].oDest, char(30));
+		board.makeMove(enPassant[0]);
+		std::string afterMove = "rnbqkbnr/pppppp1p/6P1/8/8/8/PPPPP1PP/RNBQKBNR";
+		Assert::AreEqual(board.getFenString(), afterMove);
+	}
+	TEST_METHOD(TestEnPassantAfterMove)
+	{
+		Chessboard board;
+		board.makeMove({ 53, 37, 53, 37, Move::Type::Move });
+		board.makeMove({ 14, 30, 14, 30, Move::Type::Move });
+		board.getPiece(37)->onNextTurn();
+		board.makeMove({ 37, 29, 37, 29, Move::Type::Move });
+		board.getPiece(30)->onNextTurn();
+		std::string expected = "rnbqkbnr/pppppp1p/8/5Pp1/8/8/PPPPP1PP/RNBQKBNR";
+		Assert::AreEqual(board.getFenString(), expected);
+		std::vector<Move> moves;
+		std::vector<Move> enPassant;
+		board.getMoves(29, moves);
+		for (const auto& move : moves) {
+			if (move.type == Move::Type::EnPassant)
+				enPassant.push_back(move);
+		}
+		Assert::IsTrue(enPassant.empty());
+	}
+	TEST_METHOD(TestPromotionSuccessful)
+	{
+		Chessboard board("rnbqkb1r/ppppp1Pp/7n/8/6P1/7B/PPPPPp1P/RNBQK1NR");
+		board.makeMove({ 14, 6, 14, 6, Move::Type::Move });
+		Assert::IsTrue(board.getPiece(6)->canPromote());
+		board.makeMove({ 53, 61, 53, 61, Move::Type::Move });
+		Assert::IsTrue(board.getPiece(61)->canPromote());
+	}
+	TEST_METHOD(TestMakePromotionFigureFromList) {
+		Chessboard board("rnbqkbPr/ppppp2p/7n/8/6P1/7B/PPPPPp1P/RNBQK1NR");
+		Assert::IsTrue(board.getPiece(6)->getType() == Piece::Type::Pawn);
+		board.switchPromotion(6, Piece::Type::Queen);
+		Assert::IsTrue(board.getPiece(6)->getType() == Piece::Type::Queen);
+	}
+	TEST_METHOD(TestMakePromotionFigureNotFromList) {
+		Chessboard board("rnbqkbPr/ppppp2p/7n/8/6P1/7B/PPPPPp1P/RNBQK1NR");
+		Assert::IsTrue(board.getPiece(6)->getType() == Piece::Type::Pawn);
+		board.switchPromotion(6, Piece::Type::King);
+		Assert::IsTrue(board.getPiece(6)->getType() == Piece::Type::Pawn);
+	}
 };
