@@ -357,4 +357,106 @@ TEST_CLASS(ChessboardUnitTest)
 		board.switchPromotion(6, Piece::Type::King);
 		Assert::IsTrue(board.getPiece(6)->getType() == Piece::Type::Pawn);
 	}
+	TEST_METHOD(TestKingImminentDanger)
+	{
+		Chessboard board("R6Q/8/1k6/NB6/8/8/8/6K1");
+		std::vector<char> expectedMoves = { 10, 25, 26 };
+		std::vector<Move::Type> expectedTypes = { Move::Type::Move, Move::Type::Capture, Move::Type::Move };
+		char pos = 17;
+
+		std::vector<Move> moves;
+		board.getPiece(pos)->getMoves(moves);
+
+		int i = 0;
+		for (const auto& move : moves)
+		{
+			Assert::AreEqual(move.cStart, pos);
+			Assert::AreEqual(move.cDest, expectedMoves[i]);
+			Assert::AreEqual(move.type, expectedTypes[i]);
+			i++;
+		}
+	}
+	TEST_METHOD(TestKingInDangerBodyguard)
+	{
+		Chessboard board("8/8/b1k5/4n3/r5q1/8/8/2R4K");
+		char expectedMove = 34;
+		Move::Type expectedType = Move::Type::Move;
+
+		std::vector<char> offsets;
+		board.getTeamOffsets(Team::Player2, offsets);
+		for (const auto& i : offsets)
+		{
+			if (board.getPiece(i)->getType() == Piece::Type::King)
+				continue;
+
+			std::vector<Move> moves;
+			board.getMoves(i, moves);
+			for (const auto& move : moves)
+			{
+				Assert::AreEqual(move.cStart, i);
+				Assert::AreEqual(move.cDest, expectedMove);
+				Assert::AreEqual(move.type, expectedType);
+			}
+		}
+	}
+	TEST_METHOD(TestKingInDangerCapture)
+	{
+		Chessboard board("8/8/8/8/8/b1k5/3p3K/q1R1r3");
+		char expectedMove = 58;
+		Move::Type expectedType = Move::Type::Capture;
+
+		std::vector<char> offsets;
+		board.getTeamOffsets(Team::Player2, offsets);
+		for (const auto& i : offsets)
+		{
+			if (board.getPiece(i)->getType() == Piece::Type::King)
+				continue;
+
+			std::vector<Move> moves;
+			board.getMoves(i, moves);
+			for (const auto& move : moves)
+			{
+				Assert::AreEqual(move.cStart, i);
+				Assert::AreEqual(move.cDest, expectedMove);
+				Assert::AreEqual(move.type, expectedType);
+			}
+		}
+	}
+	TEST_METHOD(TestKingVsKing)
+	{
+		Chessboard board("k7/2K5/8/8/8/8/8/8");
+		std::vector<char> expected1 = { 2, 3, 11, 17, 18, 19 };
+		std::vector<char> expected2 = { 8 };
+		char pos1 = 10, pos2 = 0;
+
+		// King player 1
+		{
+			std::vector<Move> moves;
+			board.getPiece(pos1)->getMoves(moves);
+
+			int i = 0;
+			for (const auto& move : moves)
+			{
+				Assert::AreEqual(move.cStart, pos1);
+				Assert::AreEqual(move.cDest, expected1[i]);
+				Assert::AreEqual(move.type, Move::Type::Move);
+				i++;
+			}
+		}
+
+		// King player 2
+		{
+			std::vector<Move> moves;
+			board.getPiece(pos2)->getMoves(moves);
+
+			int i = 0;
+			for (const auto& move : moves)
+			{
+				Assert::AreEqual(move.cStart, pos2);
+				Assert::AreEqual(move.cDest, expected2[i]);
+				Assert::AreEqual(move.type, Move::Type::Move);
+				i++;
+			}
+		}
+	}
 };

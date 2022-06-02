@@ -6,9 +6,10 @@ int main()
     //game.play(20);
 
     ChessboardPrinter printer;
-    Chessboard board("R6Q/8/1k6/NB6/8/1P2n3/1PPP1P1P/RNB3K1");
+    Chessboard board("k7/2K5/8/8/8/8/8/8");
     std::vector<char> offsets;
     board.getTeamOffsets(Team::Player2, offsets);
+    board.getTeamOffsets(Team::Player1, offsets);
     for (const auto& i : offsets)
         printer.printMoves(i, board);
 }
