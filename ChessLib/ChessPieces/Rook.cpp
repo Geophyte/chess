@@ -11,7 +11,7 @@ Piece::Type Rook::getType() const
 	return Piece::Type::Rook;
 }
 
-void Rook::getMoves(std::vector<Move>& moves) const
+void Rook::generateMoves(std::vector<Move>& moves) const
 {
 	static const std::vector<char> moveDirs = { -8, -1, 1, 8 };
 	Piece::getMoves(moveDirs, moves);
@@ -19,8 +19,6 @@ void Rook::getMoves(std::vector<Move>& moves) const
 
 	// Roszada
 	getCastling(moves);
-
-	removeIllegalMoves(moves);
 }
 
 void Rook::getCastling(std::vector<Move>& moves) const

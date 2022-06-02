@@ -11,7 +11,7 @@ Piece::Type Pawn::getType() const
 	return Piece::Type::Pawn;
 }
 
-void Pawn::getMoves(std::vector<Move>& moves) const
+void Pawn::generateMoves(std::vector<Move>& moves) const
 {
 	char moveDirection;
 	std::vector<char> captureDirections;
@@ -79,6 +79,4 @@ void Pawn::getMoves(std::vector<Move>& moves) const
 				}
 		}
 	}
-
-	removeIllegalMoves(moves);
 }

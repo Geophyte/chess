@@ -32,6 +32,7 @@ public:
 	Team getTeam() const;
 	State getState() const;
 	void setState(State s);
+	void setPos(char pos);
 
 	void saveState();
 	void restoreState();
@@ -46,7 +47,8 @@ public:
 
 	virtual Type getType() const = 0;
 	virtual char getPos() const;
-	virtual void getMoves(std::vector<Move>& moves) const = 0;
+	virtual void getMoves(std::vector<Move>& moves) const;			// generuje ruchy i usuwa nielegalne ruchy
+	virtual void generateMoves(std::vector<Move>& moves) const = 0;	// generuje wszystkie ruchy
 protected:
 	int getMaxDistance() const;	// zwraca maksymaln¹ iloœæ pól któr¹ mo¿e pokonaæ pionek w jednym ruchu
 	void getMoves(const std::vector<char>& directions, std::vector<Move>& moves) const;

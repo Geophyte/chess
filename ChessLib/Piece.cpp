@@ -20,6 +20,11 @@ void Piece::setState(State s)
 	cState = s;
 }
 
+void Piece::setPos(char p)
+{
+	pos = p;
+}
+
 void Piece::onMove(char p)
 {
 	if (cState == State::NotMoved)
@@ -95,6 +100,12 @@ int Piece::getMaxDistance() const
 char Piece::getPos() const
 {
 	return pos;
+}
+
+void Piece::getMoves(std::vector<Move>& moves) const
+{
+	generateMoves(moves);
+	removeIllegalMoves(moves);
 }
 
 void Piece::getMoves(const std::vector<char>& directions, std::vector<Move>& moves) const

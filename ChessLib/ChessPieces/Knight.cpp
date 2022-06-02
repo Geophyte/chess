@@ -11,9 +11,8 @@ Piece::Type Knight::getType() const
 	return Piece::Type::Knight;
 }
 
-void Knight::getMoves(std::vector<Move>& moves) const
+void Knight::generateMoves(std::vector<Move>& moves) const
 {
 	static const std::vector<char> directions = { -17,-15,-10,-6,6,10,15,17 };
 	Piece::getMoves(directions, moves);
-	removeIllegalMoves(moves);
 }

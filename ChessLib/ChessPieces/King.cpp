@@ -10,16 +10,13 @@ Piece::Type King::getType() const
 {
 	return Piece::Type::King;
 }
-
-void King::getMoves(std::vector<Move>& moves) const
+void King::generateMoves(std::vector<Move>& moves) const
 {
 	static const std::vector<char> directions = { -9, -8, -7, -1, 1, 7, 8, 9 };
 	Piece::getMoves(directions, moves);
 
 	// Roszada
 	getCastling(moves);
-
-	removeIllegalMoves(moves);
 }
 
 bool King::willIndangereKing(const Move& move) const
@@ -27,7 +24,7 @@ bool King::willIndangereKing(const Move& move) const
 	bool result;
 
 	chessboard.makeMove(move);
-	if (inCheck() > 0)
+	if (inCheck() >= 0)
 		result = true;
 	else
 		result = false;
@@ -38,85 +35,22 @@ bool King::willIndangereKing(const Move& move) const
 
 char King::inCheck() const
 {
-	std::vector<char> directions = { -9, -8, -7, -1, 1, 7, 8, 9 };
-	for (const auto& direction : directions)
+	std::unique_ptr<Piece> pieces[6];
+	pieces[0] = std::make_unique<King>(chessboard, team, pos);
+	pieces[1] = std::make_unique<Queen>(chessboard, team, pos);
+	pieces[2] = std::make_unique<Bishop>(chessboard, team, pos);
+	pieces[3] = std::make_unique<Knight>(chessboard, team, pos);
+	pieces[4] = std::make_unique<Rook>(chessboard, team, pos);
+	pieces[5] = std::make_unique<Pawn>(chessboard, team, pos);
+	
+	for (const auto& piece : pieces)
 	{
-		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, direction, 1, sBuff);
-
-		for (const auto& i : sBuff)
-			if (i.second)
-				if (i.second->getTeam() != team &&
-					i.second->getType() == Type::King)
-					return i.first;
-				else
-					break;
-	}
-
-	directions = { -8, -1, 1, 8 };
-	for (const auto& direction : directions)
-	{
-		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, direction, sBuff);
-
-		for (const auto& i : sBuff)
-			if (i.second)
-				if (i.second->getTeam() != team &&
-					(i.second->getType() == Type::Rook ||
-						i.second->getType() == Type::Queen))
-					return i.first;
-				else
-					break;
-	}
-
-	directions = { -7, -9, 7, 9 };
-	for (const auto& direction : directions)
-	{
-		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, direction, sBuff);
-
-		for (const auto& i : sBuff)
-			if (i.second)
-				if (i.second->getTeam() != team &&
-					(i.second->getType() == Type::Bishop ||
-						i.second->getType() == Type::Queen))
-					return i.first;
-				else
-					break;
-	}
-
-	directions = { -17,-15,-10,-6,6,10,15,17 };
-	for (const auto& direction : directions)
-	{
-		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, direction, 1, sBuff);
-
-		for (const auto& i : sBuff)
-			if (i.second)
-				if (i.second->getTeam() != team &&
-					i.second->getType() == Type::Knight)
-					return i.first;
-				else
-					break;
-	}
-
-	if(team == Team::Player1)
-		directions = { -7, -9 };
-	else
-		directions = { 7, 9 };
-
-	for (const auto& direction : directions)
-	{
-		std::vector<std::pair<char, Piece*>> sBuff;
-		chessboard.searchDirection(pos, direction, 1, sBuff);
-
-		for (const auto& i : sBuff)
-			if (i.second)
-				if (i.second->getTeam() != team &&
-					i.second->getType() == Type::Pawn)
-					return i.first;
-				else
-					break;
+		std::vector<Move> moves;
+		auto t = piece->getType();
+		piece->generateMoves(moves);
+		for (const auto& move : moves)
+			if (move.type == Move::Type::Capture && chessboard.getPiece(move.cDest)->getType() == piece->getType())
+				return move.cDest;
 	}
 
 	return -1;
