@@ -1,5 +1,4 @@
 # Chess
-Dokumnetacja znajduje się w doc/dokumentacja.pdf
 
 ## Autorzy
 Ignacy Dąbkowski, indeks 318644
