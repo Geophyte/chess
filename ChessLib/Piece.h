@@ -10,9 +10,13 @@ struct Move;
 
 enum class Team : char
 {
-	Player1, Player2 // Player1 - pozycja 'na dole', Player2 - pozycja 'na górze'
+	Player1, Player2 // Player1 - pozycja 'na dole', Player2 - pozycja 'na gï¿½rze'
 };
 
+///	Klasa bazowa dla wszystkich pionkÃ³w.
+/// GÅ‚Ã³wnym zadaniem klasy jest generowanie moÅ¼liwych do wykonania ruchÃ³w na
+/// podstawie pozycji wÅ‚asnej i innych pionkÃ³w na szachownicy, ktÃ³re nie sÄ… 
+/// sprzeczne z reguÅ‚ami gry.
 class Piece
 {
 public:
@@ -22,9 +26,9 @@ public:
 	};
 	enum class State : char
 	{
-		NotMoved,		// pionek nie poruszy³ siê od pocz¹tku rozgrywki
-		FirstMove,		// pionek poruszy³ siê pierwszy raz w ostatniej kolejce
-		Moved			// pionek siê poruszy³
+		NotMoved,		// pionek nie poruszyï¿½ siï¿½ od poczï¿½tku rozgrywki
+		FirstMove,		// pionek poruszyï¿½ siï¿½ pierwszy raz w ostatniej kolejce
+		Moved			// pionek siï¿½ poruszyï¿½
 	};
 public:
 	Piece(Chessboard& chessboard, Team t, char pos);
@@ -37,8 +41,8 @@ public:
 	void saveState();
 	void restoreState();
 
-	virtual void onMove(char pos);		// funkcja wywo³yna kiedy pionek siê poruszy
-	virtual void onNextTurn();	// funkcja wywo³yna na koniec tury (kiedy obydwaj gracze wykonali ruch)
+	virtual void onMove(char pos);		// funkcja wywoï¿½yna kiedy pionek siï¿½ poruszy
+	virtual void onNextTurn();	// funkcja wywoï¿½yna na koniec tury (kiedy obydwaj gracze wykonali ruch)
 
 	operator char() const;
 	bool canMove() const;
@@ -50,7 +54,7 @@ public:
 	virtual void getMoves(std::vector<Move>& moves) const;			// generuje ruchy i usuwa nielegalne ruchy
 	virtual void generateMoves(std::vector<Move>& moves) const = 0;	// generuje wszystkie ruchy
 protected:
-	int getMaxDistance() const;	// zwraca maksymaln¹ iloœæ pól któr¹ mo¿e pokonaæ pionek w jednym ruchu
+	int getMaxDistance() const;	// zwraca maksymalnï¿½ iloï¿½ï¿½ pï¿½l ktï¿½rï¿½ moï¿½e pokonaï¿½ pionek w jednym ruchu
 	void getMoves(const std::vector<char>& directions, std::vector<Move>& moves) const;
 	void removeIllegalMoves(std::vector<Move>& moves) const;
 protected:
@@ -60,11 +64,17 @@ protected:
 	State cState, lState;	// current State i last State
 };
 
+///	Klasa na podstawie, ktÃ³rej pionki wykonujÄ… ruch.
+/// cStart i cDest oznaczajÄ… pozycjÄ™ startowÄ… i koÅ„cowÄ… pionka wykonujÄ…cego ruch.
+/// oStart i oDest oznaczajÄ… pozycjÄ™ startowÄ… i koÅ„cowÄ… pionka na ktÃ³rego dany ruch wywrze wpÅ‚yw np. pozycja zbijanego pionka
+/// type okreÅ›la rodzaj ruchu. RozrÃ³Å¼niamy 4 rodzaje ruchu: zwykÅ‚y ruch, zbicie, roszadÄ™ i bicie w przelocie
+/// promoteFigure okreÅ›la na jakÄ… figurÄ™ zmieni siÄ™ pionek po wykonaniu ruchu
+///
+/// W przypdaku roszady cStart i cDest zawsze odnosi siÄ™ do krÃ³la, a oStart, oDest do wieÅ¼y
 struct Move
 {
-	char cStart, cDest;	// startowa i koñcowa pozycja pionka wykonuj¹cego ruch
-	char oStart, oDest;	// startowa i koñcowa pozycja pionka na którego dany ruch bêdzie wywiera³ wp³yw
-						// np. pozycja zbijanego pionka, pozycja pocz¹tkowa i koñcowa króla z którym bêdzie roszada
+	char cStart, cDest;
+	char oStart, oDest;
 	enum class Type : char
 	{
 		Move, Capture, Castling, EnPassant

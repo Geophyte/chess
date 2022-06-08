@@ -14,6 +14,9 @@
 #define COLOR_CYAN		ChessboardPrinter::Color::Cyan
 #define COLOR_WHITE		ChessboardPrinter::Color::White
 
+/// Klasa wypisujÄ…ca aktualny stan planszy do konsoli.
+/// Klasa posiada metody 'podÅ›wietlajÄ…ce' moÅ¼liwe do wyboru pionki oraz
+/// wizualizuje moÅ¼liwe do wykonania ruchu przez wybrany pionek.
 class ChessboardPrinter
 {
 public:
@@ -30,8 +33,8 @@ public:
 public:
 	ChessboardPrinter(Color player1 = COLOR_BLUE, Color player2 = COLOR_RED, Color background1 = COLOR_WHITE, Color background2 = COLOR_BLACK);
 
-	void print(std::string fen) const;	// ci¹g znaków FEN, du¿a litera = player1, ma³a litera = player2
-										// p - pionek, r - wie¿a, n - skoczek, b - goniec, q - hetman, k - król, / - koniec wiersza, [1-9] - liczba pustych miejsc
+	void print(std::string fen) const;	// ciï¿½g znakï¿½w FEN, duï¿½a litera = player1, maï¿½a litera = player2
+										// p - pionek, r - wieï¿½a, n - skoczek, b - goniec, q - hetman, k - krï¿½l, / - koniec wiersza, [1-9] - liczba pustych miejsc
 	void clear() const;
 
 	void printMoves(char pos, const Chessboard& board) const;

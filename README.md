@@ -1,5 +1,5 @@
 # Chess
-
+Dokumnetacja znajduje się w doc/dokumentacja.pdf
 
 
 ## Generowanie plików VS
