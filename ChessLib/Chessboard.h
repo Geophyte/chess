@@ -10,6 +10,9 @@
 #include <stdexcept>
 #include <iostream>
 
+/// Klasa przechowujÄ…ca pionki na szachownicy.
+/// GÅ‚Ã³wnym zadaniem klasy jest zmiana stanÃ³w pionkÃ³w podczas gry oraz
+/// odnajdywanie ich pozycji na planszy.
 class Chessboard
 {
 	friend class Piece;
@@ -18,13 +21,13 @@ public:
 
 	void makeMove(Move move);
 	void undoMove(Move move);
-	void searchDirection(char pos, char direction, std::vector<std::pair<char, Piece*>>& buffer) const;						// Przeszukuje planszê w danym kierunku do krawêdzi planszy
-	void searchDirection(char pos, char direction, char max, std::vector<std::pair<char, Piece*>>& buffer) const;	// Przeszukuje planszê w danym kierunku do krawêdzi planszy ograniczaj¹c siê do max pól
+	void searchDirection(char pos, char direction, std::vector<std::pair<char, Piece*>>& buffer) const;						// Przeszukuje planszï¿½ w danym kierunku do krawï¿½dzi planszy
+	void searchDirection(char pos, char direction, char max, std::vector<std::pair<char, Piece*>>& buffer) const;	// Przeszukuje planszï¿½ w danym kierunku do krawï¿½dzi planszy ograniczajï¿½c siï¿½ do max pï¿½l
 
-	bool canMoveStep(char current, char dest) const;	// sprawdza czy mo¿na przejœæ miêdzy polami bez wychodzenia za planszê
+	bool canMoveStep(char current, char dest) const;	// sprawdza czy moï¿½na przejï¿½ï¿½ miï¿½dzy polami bez wychodzenia za planszï¿½
 
-	std::string getFenString() const;	// zwraca aktualne po³o¿enie figur jako FEN string
-	void getMoves(char pos, std::vector<Move>& moves) const;	// zwraca mo¿liwe do wykonania ruchy przez figurê na danej pozycji
+	std::string getFenString() const;	// zwraca aktualne poï¿½oï¿½enie figur jako FEN string
+	void getMoves(char pos, std::vector<Move>& moves) const;	// zwraca moï¿½liwe do wykonania ruchy przez figurï¿½ na danej pozycji
 	void getTeamOffsets(Team team, std::vector<char>& offsets) const;
 	void switchPromotion(char position, Piece::Type type);
 	King* getKing(Team team) const;
