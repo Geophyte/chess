@@ -65,10 +65,10 @@ protected:
 };
 
 ///	Klasa na podstawie, której pionki wykonują ruch.
-/// cStart i cDest oznaczają pozycję startową i końcową pionka wykonującego ruch.
-/// oStart i oDest oznaczają pozycję startową i końcową pionka na którego dany ruch wywrze wpływ np. pozycja zbijanego pionka
-/// type określa rodzaj ruchu. Rozróżniamy 4 rodzaje ruchu: zwykły ruch, zbicie, roszadę i bicie w przelocie
-/// promoteFigure określa na jaką figurę zmieni się pionek po wykonaniu ruchu
+//! cStart i cDest oznaczają pozycję startową i końcową pionka wykonującego ruch.
+//! oStart i oDest oznaczają pozycję startową i końcową pionka na którego dany ruch wywrze wpływ np. pozycja zbijanego pionka
+//! type określa rodzaj ruchu. Rozróżniamy 4 rodzaje ruchu: zwykły ruch, zbicie, roszadę i bicie w przelocie
+//! promoteFigure określa na jaką figurę zmieni się pionek po wykonaniu ruchu
 ///
 /// W przypdaku roszady cStart i cDest zawsze odnosi się do króla, a oStart, oDest do wieży
 struct Move
