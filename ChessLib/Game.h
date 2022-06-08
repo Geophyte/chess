@@ -1,10 +1,14 @@
-#pragma once
+﻿#pragma once
 #include "Chessboard.h"
 #include "ChessboardPrinter.h"
 #include "Players/Player.h"
 #include "FileMoveWriter.h"
 #include "GameStatus.h"
 
+
+/// Klasa odpowiadajaca za caly cykl gry.
+/// Sposrod zadan klasy sa zarzadznie obiektami gry (pionki, szachownica)
+/// oraz sprawdzenie wszystkich warunkow logicznych gry (np. okreslenie statusu rozrywki).
 class Game
 {
 private:

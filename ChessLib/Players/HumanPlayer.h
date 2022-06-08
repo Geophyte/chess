@@ -2,6 +2,10 @@
 #include "Player.h"
 #include <iostream>
 
+
+/// Klasa reprezentujaca gracza-czlowieka.
+/// Pobiera ruchy z konsoli oraz podswietla 
+/// wszystkie mozliwe ruchy pionka wybranego przez gracza.
 class HumanPlayer : public Player
 {
 private:

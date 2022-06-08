@@ -2,7 +2,9 @@
 #include "../Chessboard.h"
 #include "../ChessboardPrinter.h"
 
-
+/// Klasa bazowa dla wszystkich graczy.
+/// Glownym zadaniem klasy jest pobieranie ruchow graczy
+/// zgodnie z regulami gry.
 class Player
 {
 protected:
