@@ -1,8 +1,8 @@
 # Chess
 
 ## Autorzy
-Ignacy Dąbkowski, indeks 318644
-Nikita Sushko, indeks 323666
+Ignacy Dąbkowski,
+Nikita Sushko,
 
 ## Podział pracy
 Ignacy Dąbkowski: implemetacja szachownicy, wszystkich pionków, wyświetlenia szacownicy oraz gracza komputerowego; napisanie testów jednostkowych i dokumentacji.
